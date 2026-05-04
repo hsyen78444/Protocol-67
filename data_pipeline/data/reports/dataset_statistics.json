@@ -1,0 +1,83 @@
+{
+  "total_rows": 303,
+  "rows_per_source": {
+    "curated_local_fallback": 104,
+    "twitch": 100,
+    "twitter_x": 99
+  },
+  "rows_per_platform": {
+    "urban_dictionary": 104,
+    "twitch": 100,
+    "twitter_x": 99
+  },
+  "sentiment_distribution": {
+    "positive": 138,
+    "negative": 92,
+    "neutral": 70,
+    "mixed": 3
+  },
+  "confidence_distribution": {
+    "high": 219,
+    "medium": 81,
+    "low": 3
+  },
+  "top_20_slang_terms": {
+    "w": 12,
+    "rn": 11,
+    "slaps": 10,
+    "cooked": 9,
+    "fr": 9,
+    "mid": 9,
+    "no cap": 9,
+    "clean": 9,
+    "ngl": 8,
+    "locked in": 8,
+    "sus": 8,
+    "yapping": 8,
+    "clutch": 8,
+    "tweaking": 7,
+    "valid": 7,
+    "side quest": 7,
+    "wild": 7,
+    "nerfed": 7,
+    "speedrun": 7,
+    "bro": 5
+  },
+  "total_unknown_terms": 81,
+  "top_unknown_terms": {
+    "testing": 16,
+    "passed": 4,
+    "meeting": 4,
+    "studying": 4,
+    "confusing": 4,
+    "timing": 4,
+    "pathing": 4,
+    "noodles": 3,
+    "worked": 3,
+    "walking": 3,
+    "activated": 3,
+    "took": 3,
+    "door": 3,
+    "saving": 3,
+    "missing": 2,
+    "called": 2,
+    "handled": 2,
+    "looks": 1,
+    "forced": 1,
+    "feed": 1
+  },
+  "rows_with_quality_flags": 84,
+  "quality_flag_counts": {
+    "clean": 219,
+    "short_text": 7,
+    "contains_unknown_terms": 76,
+    "missing_slang": 3,
+    "low_translation_confidence": 3
+  },
+  "duplicate_rows_removed": 1,
+  "split_sizes": {
+    "train": 242,
+    "validation": 30,
+    "test": 31
+  }
+}

@@ -1,0 +1,31 @@
+id,raw_text,clean_text,detected_slang_terms,formal_translation,sentiment,confidence_label,source,platform,unknown_terms,quality_flags
+2,that fit ate ngl,that fit ate ngl,ngl|ate|fit,"That outfit looked very impressive, not going to lie.",positive,high,curated_local_fallback,urban_dictionary,,clean
+5,locked in rn,locked in rn,locked in|rn,Focused and ready to perform right now.,positive,medium,curated_local_fallback,urban_dictionary,,short_text
+16,that player is goated,that player is goated,goated,That player is considered among the greatest.,positive,high,curated_local_fallback,urban_dictionary,,clean
+35,he was aura farming in the lobby,he was aura farming in the lobby,aura farming,He was performing actions to appear impressive or confident in the lobby.,neutral,high,curated_local_fallback,urban_dictionary,,clean
+40,the series fell off,the series fell off,fell off,"The series declined in quality, popularity, or performance.",negative,high,curated_local_fallback,urban_dictionary,,clean
+56,this scene is peak,this scene is peak,peak,This scene is excellent or at the highest quality.,positive,high,curated_local_fallback,urban_dictionary,,clean
+60,thanks fam,thanks fam,fam,Thanks friend or familiar group member.,positive,medium,curated_local_fallback,urban_dictionary,,short_text
+62,she is a presentation queen,she is a presentation queen,queen,She is a presentation admired woman or person being praised.,positive,high,curated_local_fallback,urban_dictionary,,clean
+78,the lobby had one sweat,the lobby had one sweat,sweat,"The lobby had one someone trying very hard, especially in games.",negative,high,curated_local_fallback,urban_dictionary,,clean
+104,the reply caused a ratio,the reply caused a ratio,ratio,The reply caused a a response receiving more engagement than the original post.,negative,medium,curated_local_fallback,urban_dictionary,caused,contains_unknown_terms
+125,the tutorial speedrun was wild,the tutorial speedrun was wild,speedrun|wild,"The tutorial complete something very quickly was surprising, intense, or unusual.",neutral,high,twitter_x,twitter_x,,clean
+149,this timetable is giving side quest energy after the patch,this timetable is giving side quest energy after the patch,side quest|giving,This timetable is suggesting or resembling a certain quality an unexpected secondary task or adventure energy after the patch.,neutral,high,twitter_x,twitter_x,,clean
+155,the tutorial speedrun was wild before the deadline,the tutorial speedrun was wild before the deadline,speedrun|wild,"The tutorial complete something very quickly was surprising, intense, or unusual before the deadline.",neutral,high,twitter_x,twitter_x,,clean
+163,the meeting became a side quest before the deadline,the meeting became a side quest before the deadline,side quest,The meeting became a an unexpected secondary task or adventure before the deadline.,neutral,medium,twitter_x,twitter_x,meeting,contains_unknown_terms
+169,this playlist slaps while studying during revision,this playlist slaps while studying during revision,slaps,This playlist is very good or enjoyable while studying during revision.,positive,medium,twitter_x,twitter_x,studying,contains_unknown_terms
+199,this playlist slaps while studying on the bus,this playlist slaps while studying on the bus,slaps,This playlist is very good or enjoyable while studying on the bus.,positive,medium,twitter_x,twitter_x,studying,contains_unknown_terms
+208,that combo was goated,that combo was goated,goated,That combo was considered among the greatest.,positive,high,twitch,twitch,,clean
+210,npc pathing moment,npc pathing moment,npc,Someone perceived as unoriginal or passive pathing moment.,negative,medium,twitch,twitch,pathing,short_text|contains_unknown_terms
+211,skill issue but respectfully,skill issue but respectfully,skill issue,Failure attributed jokingly to lack of skill but respectfully.,negative,high,twitch,twitch,,clean
+226,the carry was real,the carry was real,carry|real,The do most of the work for a group was relatable or truthful.,positive,high,twitch,twitch,,clean
+249,the patch buffed the healer after the patch,the patch buffed the healer after the patch,buffed,The patch strengthened or improved the healer after the patch.,positive,high,twitch,twitch,,clean
+254,this lobby is full of sweats in the group chat,this lobby is full of sweats in the group chat,,This lobby is full of sweats in the group chat.,neutral,low,twitch,twitch,,missing_slang|low_translation_confidence
+261,that was a canon event for the run during revision,that was a canon event for the run during revision,canon event,That was a an unavoidable formative experience for the run during revision.,neutral,high,twitch,twitch,,clean
+265,w save by the support after the patch,w save by the support after the patch,w,A successful outcome save by the support after the patch.,positive,high,twitch,twitch,,clean
+267,let him cook he has a plan on the bus,let him cook he has a plan on the bus,let him cook,Allow someone to continue because they may produce a good result he has a plan on the bus.,positive,high,twitch,twitch,,clean
+268,that combo was goated after class,that combo was goated after class,goated,That combo was considered among the greatest after class.,positive,high,twitch,twitch,,clean
+275,that dodge was clean on the bus,that dodge was clean on the bus,clean,"That dodge was neat, impressive, or well executed on the bus.",positive,high,twitch,twitch,,clean
+276,bro is locked in rn after class,bro is locked in rn after class,locked in|bro|rn,He is focused and ready to perform right now after class.,positive,high,twitch,twitch,,clean
+278,peak gameplay ngl in the group chat,peak gameplay ngl in the group chat,peak|ngl,Excellent or at the highest quality gameplay not going to lie in the group chat.,positive,high,twitch,twitch,,clean
+292,sus door on the left after class,sus door on the left after class,sus,Suspicious or questionable door on the left after class.,negative,medium,twitch,twitch,door,contains_unknown_terms

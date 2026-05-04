@@ -1,4 +1,4 @@
-# Brainrot to English: Agent-Driven Diachronic Linguistic Analysis
+# Protocol 67: Agent-Driven Diachronic Linguistic Analysis
 
 ## Scope
 

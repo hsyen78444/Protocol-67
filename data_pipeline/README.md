@@ -1,8 +1,8 @@
 # Brainrot to English: Agent-Driven Diachronic Linguistic Analysis
 
-## Member 1 Scope
+## Scope
 
-This folder contains the **Member 1: Data Engineering & Preprocessing Lead** deliverable. It covers data collection, dataset curation, preprocessing, slang detection, train-ready dataset generation, data quality reporting, and documentation.
+This folder contains the **Data Engineering & Preprocessing** deliverable. It covers data collection, dataset curation, preprocessing, slang detection, train-ready dataset generation, data quality reporting, and documentation.
 
 It does not implement model fine-tuning, LoRA, FastAPI, PostgreSQL, or the full agent.
 

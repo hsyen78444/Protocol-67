@@ -1,83 +1,169 @@
 {
-  "total_rows": 2504,
+  "train_ready_rows": 431,
+  "all_processed_rows": 3853,
+  "active_learning_candidates": 3422,
   "rows_per_source": {
-    "twitter_x": 1200,
-    "twitch": 1200,
-    "local_urban_dictionary_api": 104
+    "twitch": 337,
+    "local_urban_dictionary_api": 94
   },
   "rows_per_platform": {
-    "twitter_x": 1200,
-    "twitch": 1200,
-    "urban_dictionary": 104
+    "twitch": 337,
+    "urban_dictionary": 94
   },
   "sentiment_distribution": {
-    "positive": 1159,
-    "negative": 745,
-    "neutral": 559,
-    "mixed": 41
+    "positive": 212,
+    "negative": 161,
+    "neutral": 55,
+    "mixed": 3
   },
   "confidence_distribution": {
-    "high": 1509,
-    "medium": 948,
-    "low": 47
+    "high": 305,
+    "medium": 126
   },
   "top_20_slang_terms": {
-    "w": 122,
-    "rn": 121,
-    "clean": 82,
-    "fr": 81,
-    "ngl": 81,
-    "mid": 81,
-    "cooked": 81,
-    "no cap": 81,
-    "tweaking": 81,
-    "slaps": 81,
-    "sus": 81,
-    "locked in": 81,
-    "yapping": 81,
-    "valid": 81,
-    "side quest": 81,
-    "wild": 81,
-    "clutch": 81,
-    "nerfed": 81,
-    "speedrun": 81,
-    "bro": 47
+    "feelsgoodman": 129,
+    "madge": 80,
+    "sadge": 32,
+    "omegalul": 14,
+    "idk": 12,
+    "bro": 10,
+    "pog": 8,
+    "copium": 8,
+    "real": 7,
+    "king": 6,
+    "lul": 6,
+    "l": 5,
+    "bet": 4,
+    "fit": 4,
+    "fr": 3,
+    "rn": 3,
+    "giving": 3,
+    "pepehands": 3,
+    "feelsstrongman": 3,
+    "monkas": 3
   },
-  "total_unknown_terms": 1128,
+  "total_unknown_terms": 994,
   "top_unknown_terms": {
-    "meeting": 158,
-    "testing": 120,
-    "debugging": 120,
-    "streaming": 120,
-    "took": 41,
-    "door": 41,
-    "studying": 40,
-    "confusing": 40,
-    "noodles": 40,
-    "worked": 40,
-    "walking": 40,
-    "timing": 40,
-    "pathing": 40,
-    "activated": 40,
-    "passed": 40,
-    "saving": 40,
-    "good": 7,
-    "too": 6,
-    "going": 4,
-    "being": 3
+    "too": 32,
+    "larry": 19,
+    "theultracoolcutiebobo": 15,
+    "smadging": 14,
+    "fucking": 12,
+    "licked": 12,
+    "xoosd": 10,
+    "jazzy": 10,
+    "lol": 9,
+    "cool": 8,
+    "randomping": 7,
+    "wicked": 7,
+    "snoopydoly": 7,
+    "razzy": 7,
+    "jazzykat": 7,
+    "peepopissed": 7,
+    "fixed": 6,
+    "sorry": 6,
+    "pulled": 6,
+    "bapped": 6
   },
-  "rows_with_quality_flags": 995,
+  "unknown_term_summary_top_20": [
+    {
+      "term": "too",
+      "frequency": 32
+    },
+    {
+      "term": "larry",
+      "frequency": 19
+    },
+    {
+      "term": "theultracoolcutiebobo",
+      "frequency": 15
+    },
+    {
+      "term": "smadging",
+      "frequency": 14
+    },
+    {
+      "term": "fucking",
+      "frequency": 12
+    },
+    {
+      "term": "licked",
+      "frequency": 12
+    },
+    {
+      "term": "xoosd",
+      "frequency": 10
+    },
+    {
+      "term": "jazzy",
+      "frequency": 10
+    },
+    {
+      "term": "lol",
+      "frequency": 9
+    },
+    {
+      "term": "cool",
+      "frequency": 8
+    },
+    {
+      "term": "randomping",
+      "frequency": 7
+    },
+    {
+      "term": "wicked",
+      "frequency": 7
+    },
+    {
+      "term": "snoopydoly",
+      "frequency": 7
+    },
+    {
+      "term": "razzy",
+      "frequency": 7
+    },
+    {
+      "term": "jazzykat",
+      "frequency": 7
+    },
+    {
+      "term": "peepopissed",
+      "frequency": 7
+    },
+    {
+      "term": "fixed",
+      "frequency": 6
+    },
+    {
+      "term": "sorry",
+      "frequency": 6
+    },
+    {
+      "term": "pulled",
+      "frequency": 6
+    },
+    {
+      "term": "bapped",
+      "frequency": 6
+    }
+  ],
+  "rows_with_quality_flags": 3548,
   "quality_flag_counts": {
-    "contains_unknown_terms": 957,
-    "clean": 1509,
-    "short_text": 3,
-    "missing_slang": 47,
-    "low_translation_confidence": 47
+    "contains_unknown_terms": 808,
+    "clean": 305,
+    "short_text": 2017,
+    "missing_slang": 3322,
+    "low_translation_confidence": 3322
   },
-  "duplicate_rows_removed": 3,
+  "duplicate_rows_removed": 3696,
+  "review_action_counts": {
+    "mine_or_ignore_no_dictionary_match": 2649,
+    "review_unknown_terms": 682,
+    "review_short_context": 91
+  },
   "split_sizes": {
-    "train": 2003,
-    "validation": 250,
-    "test": 251
+    "train": 344,
+    "validation": 43,
+    "test": 44
   }
 }

@@ -11,8 +11,8 @@ It does not implement model fine-tuning, LoRA, FastAPI, PostgreSQL, or the full 
 1. Collect Urban Dictionary-style definitions and examples from a compatible local API at `http://localhost:8080/api/search`, then fall back to curated local dictionary rows if the API is unavailable or too small. The local API can be cloned from `https://github.com/kashyap010/unofficial-urban-dictionary-api`.
 2. Import a Twitch chat corpus from the local `train-00000-of-00001.parquet` file.
 3. Merge all raw sources while preserving source metadata.
-4. Clean text, detect slang, generate formal translations, assign sentiment labels, and flag quality issues.
-5. Create reproducible train, validation, and test splits.
+4. Clean text, detect slang, generate formal translations, and separate train-ready rows from active-learning candidates.
+5. Create reproducible train, validation, and test splits in CSV and model-ready JSONL format.
 6. Generate Markdown and JSON data quality reports.
 
 ## Folder Structure
@@ -131,13 +131,30 @@ Dataset citation:
 - `data/raw/urban_dictionary_raw.csv`
 - `data/raw/twitch_corpus_raw.csv`
 - `data/interim/merged_raw_dataset.csv`
+- `data/interim/all_processed_rows.csv`
 - `data/interim/candidate_slang_pairs.csv`
+- `data/interim/active_learning_candidates.csv`
+- `data/interim/unknown_term_summary.csv`
 - `data/processed/brainrot_clean_dataset.csv`
 - `data/processed/train.csv`
 - `data/processed/validation.csv`
 - `data/processed/test.csv`
+- `data/processed/train.jsonl`
+- `data/processed/validation.jsonl`
+- `data/processed/test.jsonl`
 - `data/reports/data_quality_report.md`
 - `data/reports/dataset_statistics.json`
+
+## Training vs Active Learning
+
+The pipeline does not push every raw Twitch message into model fine-tuning. Twitch chat is noisy and often contains short messages, emotes, usernames, or terms that do not have a formal translation target yet.
+
+Instead, preprocessing creates two tracks:
+
+- `data/processed/brainrot_clean_dataset.csv`: train-ready supervised translation pairs.
+- `data/interim/active_learning_candidates.csv`: rows that need review, dictionary expansion, or manual translation.
+
+High-frequency unknown terms are summarized in `data/interim/unknown_term_summary.csv`. Review this file to decide which Twitch emotes, memes, and slang terms should be added to `config/slang_dictionary.json` or manually annotated.
 
 ## Git Hygiene
 

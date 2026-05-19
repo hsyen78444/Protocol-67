@@ -15,7 +15,10 @@ ROOT = Path(__file__).resolve().parents[1]
 IN_FILE = ROOT / "data" / "interim" / "merged_raw_dataset.csv"
 DICT_FILE = ROOT / "config" / "slang_dictionary.json"
 OUT_FILE = ROOT / "data" / "processed" / "brainrot_clean_dataset.csv"
+ALL_FILE = ROOT / "data" / "interim" / "all_processed_rows.csv"
 CANDIDATE_FILE = ROOT / "data" / "interim" / "candidate_slang_pairs.csv"
+REVIEW_FILE = ROOT / "data" / "interim" / "active_learning_candidates.csv"
+UNKNOWN_TERMS_FILE = ROOT / "data" / "interim" / "unknown_term_summary.csv"
 
 URL_RE = re.compile(r"https?://\S+|www\.\S+")
 MENTION_RE = re.compile(r"@\w+")
@@ -81,9 +84,19 @@ def detect_unknown_terms(text: str, known_terms: List[str], dictionary: Dict[str
     known_tokens = set()
     for term in dictionary:
         known_tokens.update(term.split())
-    known_tokens.update({"the", "a", "an", "is", "are", "was", "were", "i", "he", "she", "it", "they", "we", "you",
-                         "that", "this", "my", "your", "our", "to", "of", "and", "or", "but", "in", "on", "for",
-                         "with", "after", "before", "while", "during", "today", "again", "one", "first"})
+    known_tokens.update(
+        {
+            "the", "a", "an", "is", "are", "was", "were", "i", "he", "she", "it", "they", "we", "you",
+            "that", "this", "my", "your", "our", "to", "of", "and", "or", "but", "in", "on", "for",
+            "with", "after", "before", "while", "during", "today", "again", "one", "first", "chat",
+            "watch", "watching", "play", "run", "game", "stream", "streamer", "please", "thanks", "good",
+            "bad", "new", "old", "now", "then", "here", "there", "very", "really", "just", "like",
+            "need", "want", "going", "got", "get", "make", "made", "see", "say", "said",
+            "answered", "correctly", "following", "started", "tomorrow", "thing", "food", "noted",
+            "something", "being", "called", "pizza", "poor", "anything", "making", "soon", "used",
+            "looks", "getting", "doing", "playing", "tried", "nice", "okay", "class", "gloves",
+        }
+    )
     tokens = TOKEN_RE.findall(text)
     unknown = []
     for token in tokens:
@@ -158,12 +171,48 @@ def confidence(detected: List[str], unknown: List[str], flags: List[str]) -> str
     return "low"
 
 
+def is_train_ready(clean_text: str, detected: List[str], flags: List[str], formal: str) -> bool:
+    if not detected:
+        return False
+    if len(clean_text.split()) < 4:
+        return False
+    if "low_translation_confidence" in flags:
+        return False
+    return clean_text.rstrip(".") != formal.lower().rstrip(".")
+
+
+def review_action(detected: List[str], unknown: List[str], flags: List[str]) -> str:
+    if unknown:
+        return "review_unknown_terms"
+    if not detected:
+        return "mine_or_ignore_no_dictionary_match"
+    if "short_text" in flags:
+        return "review_short_context"
+    return "review_translation_quality"
+
+
+def priority_score(unknown: List[str], flags: List[str]) -> int:
+    score = 0
+    if unknown:
+        score += 3
+    if "missing_slang" in flags:
+        score += 2
+    if "low_translation_confidence" in flags:
+        score += 2
+    if "short_text" in flags:
+        score += 1
+    return score
+
+
 def main() -> None:
     OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    ALL_FILE.parent.mkdir(parents=True, exist_ok=True)
     dictionary = load_dictionary()
     df = pd.read_csv(IN_FILE).fillna("")
-    rows = []
+    train_rows = []
+    all_rows = []
     candidate_rows = []
+    review_rows = []
     seen = set()
     removed_unsafe = 0
 
@@ -179,6 +228,9 @@ def main() -> None:
         unknown = detect_unknown_terms(clean, detected, dictionary)
         formal = translate(clean, detected, dictionary)
         flags = quality_flags(clean, detected, unknown, formal)
+        conf = confidence(detected, unknown, flags)
+        ready = is_train_ready(clean, detected, flags, formal)
+
         for term in detected:
             candidate_rows.append(
                 {
@@ -190,27 +242,67 @@ def main() -> None:
                     "matched_in_dictionary": True,
                 }
             )
-        rows.append(
-            {
-                "id": len(rows) + 1,
-                "raw_text": row["raw_text"],
-                "clean_text": clean,
-                "detected_slang_terms": "|".join(detected),
-                "formal_translation": formal,
-                "sentiment": sentiment_label(detected, dictionary),
-                "confidence_label": confidence(detected, unknown, flags),
-                "source": row.get("source", ""),
-                "platform": row.get("platform", ""),
-                "unknown_terms": "|".join(unknown),
-                "quality_flags": "|".join(flags),
-            }
-        )
 
-    out = pd.DataFrame(rows)
+        processed = {
+            "raw_text": row["raw_text"],
+            "clean_text": clean,
+            "detected_slang_terms": "|".join(detected),
+            "formal_translation": formal,
+            "sentiment": sentiment_label(detected, dictionary),
+            "confidence_label": conf,
+            "source": row.get("source", ""),
+            "platform": row.get("platform", ""),
+            "unknown_terms": "|".join(unknown),
+            "quality_flags": "|".join(flags),
+            "training_ready": ready,
+        }
+        all_rows.append(processed)
+        if ready:
+            train_rows.append(processed)
+        else:
+            review_rows.append(
+                {
+                    "raw_text": row["raw_text"],
+                    "clean_text": clean,
+                    "platform": row.get("platform", ""),
+                    "source": row.get("source", ""),
+                    "detected_slang_terms": "|".join(detected),
+                    "unknown_terms": "|".join(unknown),
+                    "quality_flags": "|".join(flags),
+                    "suggested_action": review_action(detected, unknown, flags),
+                    "priority_score": priority_score(unknown, flags),
+                }
+            )
+
+    out = pd.DataFrame(train_rows)
+    all_out = pd.DataFrame(all_rows)
+    review_out = pd.DataFrame(review_rows)
+    if not out.empty:
+        out.insert(0, "id", range(1, len(out) + 1))
+    if not all_out.empty:
+        all_out.insert(0, "id", range(1, len(all_out) + 1))
+    if not review_out.empty:
+        review_out.insert(0, "candidate_id", range(1, len(review_out) + 1))
+
     out.to_csv(OUT_FILE, index=False)
+    all_out.to_csv(ALL_FILE, index=False)
     pd.DataFrame(candidate_rows).drop_duplicates().to_csv(CANDIDATE_FILE, index=False)
-    stats = Counter(flag for value in out["quality_flags"] for flag in str(value).split("|"))
-    print(f"Saved {len(out)} processed rows to {OUT_FILE}")
+    review_out.sort_values("priority_score", ascending=False).to_csv(REVIEW_FILE, index=False)
+
+    unknown_counter = Counter(
+        term
+        for value in all_out.get("unknown_terms", pd.Series(dtype=str)).fillna("")
+        for term in str(value).split("|")
+        if term
+    )
+    pd.DataFrame(
+        [{"term": term, "frequency": count} for term, count in unknown_counter.most_common()]
+    ).to_csv(UNKNOWN_TERMS_FILE, index=False)
+
+    stats = Counter(flag for value in all_out["quality_flags"] for flag in str(value).split("|"))
+    print(f"Saved {len(out)} train-ready rows to {OUT_FILE}")
+    print(f"Saved {len(all_out)} processed source rows to {ALL_FILE}")
+    print(f"Saved {len(review_out)} active-learning candidates to {REVIEW_FILE}")
     print(f"Saved {len(candidate_rows)} candidate slang matches to {CANDIDATE_FILE}")
     print(f"Removed unsafe rows: {removed_unsafe}")
     print(f"Quality flags: {dict(stats)}")

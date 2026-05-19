@@ -24,6 +24,19 @@ Thumbs.db
 
 *.log
 
+models/
+model_service/models/
+model_service/outputs/
+model_service/runs/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+
 data_pipeline/*.parquet
 data_pipeline/data/raw/*.tmp
 data_pipeline/data/raw/*.bak

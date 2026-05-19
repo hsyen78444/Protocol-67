@@ -6,63 +6,38 @@
 
 ## Background
 
-Internet vernacular evolves quickly. Slang, memes, abbreviations, and non-standard expressions from platforms such as Twitch, TikTok, Reddit, WhatsApp, Telegram, and Urban Dictionary can be difficult for non-native speakers, educators, researchers, older users, and NLP systems to interpret.
+Internet vernacular evolves quickly. Slang, memes, abbreviations, emotes, and non-standard expressions from platforms such as Twitch, TikTok, Reddit, WhatsApp, Telegram, and Urban Dictionary can be difficult for non-native speakers, educators, researchers, older users, and NLP systems to interpret.
 
-Protocol 67 translates highly contextual internet slang, commonly called "brainrot language", into formal English and returns supporting analysis such as sentiment, confidence, detected slang terms, and unknown terminology.
+Protocol 67 translates highly contextual internet slang, commonly called "brainrot language", into formal English and returns sentiment, confidence, detected slang terms, and unknown terminology.
 
-## Project Overview
+## System Goal
 
-Protocol 67 is a Natural Language Processing project focused on low-resource translation for informal online language. The system uses an agent-style workflow that combines:
+Build an end-to-end web application with:
 
-- A slang-to-English translation model or rule-based baseline.
-- Tool-assisted sentiment analysis.
-- Dictionary lookup for known slang terms.
-- Unknown-term detection for active learning.
-- A FastAPI backend for structured JSON responses.
-- A React frontend for user interaction.
-- Optional user-facing tools such as a Chrome extension, Telegram bot, or WhatsApp-style helper.
+- A fine-tuned or baseline slang-to-English translation model.
+- A FastAPI backend.
+- A database-backed active learning loop.
+- A React JS frontend.
+- Bonus-only optional integrations such as a Chrome extension or messaging helper.
 
-The system accepts slang-heavy user input and returns:
+## Current Data Pipeline
 
-```json
-{
-  "input": "bro is cooked fr",
-  "formal_translation": "He is in serious trouble, for real.",
-  "sentiment": "negative",
-  "confidence": 0.87,
-  "detected_slang_terms": ["bro", "cooked", "fr"],
-  "unknown_terms": []
-}
-```
+The `data_pipeline/` folder prepares the dataset for training and active learning.
 
-## Objectives
+Important outputs:
 
-1. Develop an agent-driven NLP system that translates internet slang and brainrot language into formal English.
-2. Fine-tune or adapt a language model for slang-to-English translation using the curated dataset.
-3. Integrate sentiment analysis to identify the tone or polarity of the original input.
-4. Build a RESTful FastAPI backend that returns translation, sentiment, confidence, detected terms, and unknown terms.
-5. Build a React frontend that lets users translate text, inspect detected slang, and submit corrections.
-6. Support an active learning loop where unknown slang terms and user corrections can be reviewed and used for future retraining.
-
-## Current Member 1 Deliverable
-
-Member 1 owns the data pipeline in `data_pipeline/`.
-
-Completed scope:
-
-- Urban Dictionary-style slang collection through a local API clone.
-- Twitch chat corpus ingestion from local Parquet.
-- Text cleaning and normalization.
-- Dictionary-based slang detection.
-- Rule-based formal translation bootstrap.
-- Sentiment and confidence labels.
-- Unknown-term and quality-flag generation.
-- Train, validation, and test CSV generation.
-- Data quality reports and documentation.
+- `data_pipeline/data/processed/train.csv`
+- `data_pipeline/data/processed/validation.csv`
+- `data_pipeline/data/processed/test.csv`
+- `data_pipeline/data/processed/train.jsonl`
+- `data_pipeline/data/processed/validation.jsonl`
+- `data_pipeline/data/processed/test.jsonl`
+- `data_pipeline/data/interim/active_learning_candidates.csv`
+- `data_pipeline/data/interim/unknown_term_summary.csv`
 
 The recommended model input column is `clean_text`. The recommended target column is `formal_translation`.
 
-## Proposed System Architecture
+## Architecture
 
 ```text
 React Frontend
@@ -70,45 +45,42 @@ React Frontend
     v
 FastAPI Backend
     |
-    |-- Translation Service
-    |     |-- Fine-tuned model or baseline translator
-    |     `-- Slang dictionary lookup
+    |-- Translation API
+    |     `-- model_service translator
     |
-    |-- Sentiment Service
-    |     `-- Sentiment model or lexicon/rule baseline
+    |-- Sentiment + Confidence API
     |
-    |-- Active Learning Service
-    |     `-- Unknown terms, corrections, feedback
+    |-- Active Learning API
+    |     `-- feedback + unknown terms
     |
-    `-- Database
-          |-- Translation logs
-          |-- User corrections
-          |-- Unknown slang terms
-          `-- Model/version metadata
+    `-- SQLite Database
+          |-- translations
+          |-- feedback
+          |-- unknown_terms
+          `-- model_runs
 ```
 
-## Task Distribution
+SQLite is recommended for coursework speed. PostgreSQL is a good upgrade only if the project is deployed with multiple users.
 
-### Member 2: Model Training and Translation Agent
+## Team Task Distribution
 
-Main responsibility: build the translation intelligence.
+### Member 2: Model Fine-Tuning and Translation Service
 
-Recommended tasks:
+Main responsibility: make the translator work.
 
-- Use `data_pipeline/data/processed/train.csv`, `validation.csv`, and `test.csv`.
-- Start with a baseline translator using the existing dictionary/rule-based outputs.
-- Fine-tune or adapt a small causal language model with LoRA if compute allows.
-- Create a reusable inference module, for example `model_service/translator.py`.
-- Return translation text, confidence score, detected slang terms, unknown terms, and model version.
-- Compare baseline vs fine-tuned model using simple metrics and human examples.
+Folder ownership:
 
-Implementation plan:
+```text
+model_service/
+```
 
-1. Load the processed CSV files.
-2. Convert rows into prompt/completion or instruction format.
-3. Train a baseline model or LoRA adapter.
-4. Save model artifacts under an ignored folder such as `models/`.
-5. Expose a Python function:
+Tasks:
+
+- Use `data_pipeline/data/processed/*.jsonl` for model training.
+- Build a baseline translator first using `config/slang_dictionary.json`.
+- Evaluate baseline output on `test.jsonl`.
+- Fine-tune or adapt a small model with LoRA if compute allows.
+- Keep one stable function for the backend:
 
 ```python
 def translate_text(text: str) -> dict:
@@ -121,46 +93,62 @@ def translate_text(text: str) -> dict:
     }
 ```
 
-Suggested deliverables:
+Fine-tuning steps:
 
-- `model_service/translator.py`
-- `model_service/evaluate.py`
-- `model_service/README.md`
-- Short evaluation table with sample inputs and outputs.
+1. Run the data pipeline and confirm `train.jsonl`, `validation.jsonl`, and `test.jsonl` exist.
+2. Run `model_service/scripts/prepare_dataset.py` to inspect the training records.
+3. Run the dictionary baseline in `model_service/src/baseline_translator.py`.
+4. Evaluate baseline with `model_service/scripts/evaluate.py`.
+5. Choose a small base model that fits available hardware.
+6. Convert JSONL records into instruction prompts:
 
-### Member 3: FastAPI Backend, Database, and Active Learning
+```text
+Instruction: Translate the following internet slang or brainrot text into clear formal English.
+Input: bro is cooked fr
+Output: He is in serious trouble, for real.
+```
 
-Main responsibility: turn the model into a usable API.
+7. Fine-tune with LoRA/QLoRA and save adapters under `model_service/outputs/` or `model_service/models/`.
+8. Update `model_service/src/translator.py` so the backend can call the final translator.
+9. Record base model, dataset version, hyperparameters, and example outputs in `model_service/README.md`.
 
-Recommended tasks:
+Deliverables:
 
-- Build a FastAPI app with clean request/response schemas.
-- Connect the translation module from Member 2.
-- Add sentiment analysis as a service.
-- Store translation requests, unknown terms, and user corrections.
-- Implement active learning endpoints for review and correction.
-- Add CORS support for the React frontend.
+- Baseline translator.
+- Fine-tuning script or documented attempt.
+- Evaluation result.
+- Stable `translate_text()` function.
 
-Core API endpoints:
+### Member 3: Backend A, API and Model Integration
+
+Main responsibility: expose the translator through FastAPI.
+
+Folder ownership:
+
+```text
+backend/app/main.py
+backend/app/schemas.py
+backend/app/services/
+```
+
+Tasks:
+
+- Build FastAPI routes.
+- Define Pydantic request/response schemas.
+- Connect `/translate` to `model_service`.
+- Add CORS for React.
+- Add validation and clean error responses.
+- Coordinate API contract with frontend.
+
+Core endpoints:
 
 ```text
 GET  /health
 POST /translate
-POST /feedback
-GET  /unknown-terms
-POST /unknown-terms/{term_id}/resolve
 GET  /stats
 ```
 
-Sample `/translate` request:
-
-```json
-{
-  "text": "chat this run is cooked fr"
-}
-```
-
-Sample `/translate` response:
+Main response contract:
 
 ```json
 {
@@ -174,43 +162,112 @@ Sample `/translate` response:
 }
 ```
 
-Suggested database tables:
+Deliverables:
+
+- Working FastAPI server.
+- `/translate` endpoint.
+- API README or Swagger screenshots.
+- Integration with Member 2 translator.
+
+### Member 4: Backend B, Database and Active Learning
+
+Main responsibility: make the system remember feedback and unknown slang.
+
+Folder ownership:
 
 ```text
-translations(id, input_text, output_text, sentiment, confidence, created_at)
-unknown_terms(id, term, example_text, status, created_at)
-feedback(id, translation_id, corrected_translation, notes, created_at)
+backend/app/db.py
+backend/app/models.py
+backend/docs/database_schema.md
 ```
 
-Suggested deliverables:
+Tasks:
 
-- `backend/app/main.py`
-- `backend/app/schemas.py`
-- `backend/app/services/translation.py`
-- `backend/app/services/sentiment.py`
-- `backend/app/db.py`
-- `backend/README.md`
+- Set up SQLite with SQLAlchemy.
+- Create database tables.
+- Store translation logs.
+- Store unknown terms from model/API responses.
+- Store user corrections from frontend feedback.
+- Add review/update endpoints for active learning.
 
-### Member 4: React Frontend and User Experience
+Recommended database tables:
 
-Main responsibility: build the user-facing translator.
+```text
+translations
+- id
+- input_text
+- output_text
+- sentiment
+- confidence
+- detected_slang_terms
+- unknown_terms
+- model_version
+- created_at
 
-Recommended tasks:
+unknown_terms
+- id
+- term
+- example_text
+- frequency
+- status
+- proposed_meaning
+- created_at
+- resolved_at
 
-- Build a React JS app that calls the FastAPI backend.
-- Create a clean translator interface with input, output, sentiment, confidence, and detected terms.
-- Add loading, empty, error, and success states.
-- Add correction/feedback UI for active learning.
-- Add a history panel for recent translations if the backend supports it.
+feedback
+- id
+- translation_id
+- input_text
+- original_translation
+- corrected_translation
+- notes
+- created_at
 
-Core screens:
+model_runs
+- id
+- model_version
+- base_model
+- dataset_version
+- metrics_json
+- created_at
+```
 
-- Translator page: text input and translation result.
-- Details panel: detected slang, sentiment, confidence, unknown terms.
-- Feedback modal: user correction and notes.
-- Optional admin/review page: unknown terms and submitted corrections.
+Active learning endpoints:
 
-Suggested frontend component structure:
+```text
+POST /feedback
+GET  /unknown-terms
+POST /unknown-terms/{term_id}/resolve
+```
+
+Deliverables:
+
+- SQLite database setup.
+- SQLAlchemy models.
+- Feedback persistence.
+- Unknown-term review flow.
+- Basic stats for demo.
+
+### Member 5: React Frontend
+
+Main responsibility: build the user interface.
+
+Folder ownership:
+
+```text
+frontend/
+```
+
+Tasks:
+
+- Build a React JS app, preferably with Vite.
+- Call FastAPI `/translate`.
+- Display translation, sentiment, confidence, detected slang, and unknown terms.
+- Add feedback form for corrected translations.
+- Add loading, error, empty, and success states.
+- Optionally add an admin/review page for unknown terms if backend is ready.
+
+Suggested component structure:
 
 ```text
 frontend/src/
@@ -223,88 +280,41 @@ frontend/src/
 `-- pages/ReviewQueue.jsx
 ```
 
-Suggested deliverables:
+Deliverables:
 
-- `frontend/` React app.
+- Working React app.
+- Clean translator page.
+- Feedback UI.
 - `.env.example` with backend URL.
-- Frontend README with setup commands.
-- Screenshots or short demo video.
+- Demo screenshots or short screen recording.
 
-### Member 5: Integrations, QA, Deployment, and Bonus Tools
+## Bonus Ideas
 
-Main responsibility: make the system usable outside the basic web app and keep the project stable.
+These are optional. Do them only after the main model, backend, database, and frontend work.
 
-Recommended tasks:
+Best bonus: Chrome extension.
 
-- Write integration tests for the FastAPI backend.
-- Add frontend smoke tests or manual test checklist.
-- Prepare Docker or deployment notes.
-- Build one optional tool that lets users translate slang where they already read messages.
-- Coordinate final demo flow and documentation.
-
-Best bonus option: Chrome extension.
-
-Why this is the strongest bonus:
-
-- It can work on many websites, including web-based chat pages.
-- It can call the same FastAPI `/translate` endpoint.
-- It avoids the policy and API complexity of official WhatsApp or Telegram integrations.
-
-Chrome extension implementation idea:
-
-```text
-chrome_extension/
-|-- manifest.json
-|-- popup.html
-|-- popup.js
-|-- content.js
-`-- styles.css
-```
-
-Possible extension features:
-
-- User selects slang text on a webpage.
-- Extension popup sends selected text to FastAPI.
+- User selects slang text on any webpage.
+- Extension sends selected text to FastAPI.
 - Popup shows formal translation, sentiment, and confidence.
-- Optional content script adds a small "Translate" button beside selected text.
 
-Alternative bonus tools:
+Other bonus options:
 
-- Telegram bot using the Bot API: easiest real messaging integration if a bot token is available.
-- WhatsApp-style helper page: user pastes chat text into the React app and receives translations.
-- Browser bookmarklet: lightweight option if a full extension is too much.
-- Discord bot: good fit for slang and chat data if the team already uses Discord.
+- Telegram bot using the Telegram Bot API.
+- WhatsApp-style helper page where users paste chat messages.
+- Discord bot for slang-heavy chat servers.
+- Browser bookmarklet for a lightweight demo.
 
-Suggested deliverables:
+## Development Order
 
-- `tests/` for backend API checks.
-- `docker-compose.yml` or deployment guide.
-- `chrome_extension/` or `telegram_bot/`.
-- Final demo script showing data pipeline, API, frontend, and optional tool.
-
-## Recommended Development Order
-
-1. Member 2 creates a baseline translator function first, even before final model training.
-2. Member 3 builds FastAPI around that stable function contract.
-3. Member 4 builds the React UI against mocked API responses, then switches to the real backend.
-4. Member 5 adds tests, deployment notes, and one bonus integration.
-5. All members connect active learning: unknown terms and corrections should flow back into future dataset updates.
-
-## Integration Contract
-
-All components should agree on this response shape:
-
-```json
-{
-  "input": "string",
-  "formal_translation": "string",
-  "sentiment": "positive | negative | neutral | mixed",
-  "confidence": 0.0,
-  "detected_slang_terms": ["string"],
-  "unknown_terms": ["string"],
-  "model_version": "string"
-}
-```
+1. Member 2 creates baseline `translate_text()`.
+2. Member 3 builds FastAPI around that function.
+3. Member 4 creates database models and feedback storage.
+4. Member 5 builds React against the API contract.
+5. Member 2 improves model quality with fine-tuning.
+6. Backend members connect active learning to unknown terms and feedback.
+7. Team prepares final demo.
+8. Bonus integrations only if the main app is stable.
 
 ## Suggested Repository Structure
 
@@ -314,16 +324,20 @@ Protocol 67/
 |-- frontend/
 |-- model_service/
 |-- data_pipeline/
-|-- chrome_extension/       # optional bonus
-|-- telegram_bot/           # optional bonus alternative
 |-- tests/
 |-- README.md
 `-- .gitignore
 ```
 
-## Notes
+## Git Hygiene
 
-- Do not commit virtual environments, model weights, downloaded Parquet files, `.env` files, or large generated artifacts unless the team explicitly agrees.
-- Keep API responses deterministic enough for frontend testing.
-- Keep the baseline translator available even if model fine-tuning is incomplete.
-- Prioritize a working end-to-end demo over a perfect model.
+Do not commit:
+
+- Virtual environments.
+- `.env` files.
+- Downloaded Parquet datasets.
+- Model weights or adapters.
+- SQLite database files.
+- Large generated artifacts unless the team explicitly agrees.
+
+Ignored examples include `venv/`, `.venv/`, `models/`, `model_service/outputs/`, `*.safetensors`, `*.bin`, `backend/*.db`, and `data_pipeline/*.parquet`.

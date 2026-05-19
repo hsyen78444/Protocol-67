@@ -14,6 +14,7 @@ import json
 from datetime import date
 from pathlib import Path
 from typing import Iterable, List
+from urllib.parse import urlparse
 
 import pandas as pd
 
@@ -21,6 +22,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "data" / "raw"
 COLUMNS = ["text", "platform", "source_type", "collection_date"]
+REMOTE_PREFIXES = ("hf://", "http://", "https://")
 
 
 TWITTER_TEMPLATES = [
@@ -90,25 +92,53 @@ TWITCH_TEMPLATES = [
 ]
 
 
-def load_any(path: str | None, platform: str) -> pd.DataFrame | None:
+def suffix_for(path: str) -> str:
+    parsed = urlparse(path)
+    return Path(parsed.path if parsed.scheme else path).suffix.lower()
+
+
+def source_type_for(path: str) -> str:
+    if path.startswith("hf://"):
+        return "huggingface_parquet"
+    suffix = suffix_for(path).lstrip(".") or "file"
+    return f"local_{suffix}"
+
+
+def read_input(path: str) -> pd.DataFrame:
+    suffix = suffix_for(path)
+    is_remote = path.startswith(REMOTE_PREFIXES)
+    if not is_remote and not Path(path).exists():
+        raise FileNotFoundError(f"Input file not found: {path}")
+
+    if suffix == ".csv":
+        return pd.read_csv(path)
+    if suffix == ".jsonl":
+        if is_remote:
+            return pd.read_json(path, lines=True)
+        rows = [json.loads(line) for line in Path(path).read_text(encoding="utf-8").splitlines() if line.strip()]
+        return pd.DataFrame(rows)
+    if suffix == ".parquet":
+        return pd.read_parquet(path)
+    raise ValueError("Only CSV, JSONL, and Parquet inputs are supported.")
+
+
+def load_any(path: str | None, platform: str, limit: int | None = None) -> pd.DataFrame | None:
     if not path:
         return None
-    source = Path(path)
-    if not source.exists():
-        raise FileNotFoundError(f"Input file not found: {source}")
 
-    if source.suffix.lower() == ".csv":
-        df = pd.read_csv(source)
-    elif source.suffix.lower() == ".jsonl":
-        rows = [json.loads(line) for line in source.read_text(encoding="utf-8").splitlines() if line.strip()]
-        df = pd.DataFrame(rows)
+    df = read_input(path)
+    if "text" in df.columns:
+        text_col = "text"
+    elif "message" in df.columns:
+        text_col = "message"
     else:
-        raise ValueError("Only CSV and JSONL inputs are supported.")
+        text_col = df.columns[0]
 
-    text_col = "text" if "text" in df.columns else df.columns[0]
     out = pd.DataFrame({"text": df[text_col].astype(str)})
+    if limit:
+        out = out.head(limit)
     out["platform"] = platform
-    out["source_type"] = f"local_{source.suffix.lower().lstrip('.')}"
+    out["source_type"] = source_type_for(path)
     out["collection_date"] = date.today().isoformat()
     return out[COLUMNS]
 
@@ -145,12 +175,14 @@ def save(df: pd.DataFrame, filename: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--twitter-input", help="Optional CSV or JSONL file with a text column.")
-    parser.add_argument("--twitch-input", help="Optional CSV or JSONL file with a text column.")
+    parser.add_argument("--twitter-input", help="Optional CSV, JSONL, or Parquet file with a text/message column.")
+    parser.add_argument("--twitch-input", help="Optional CSV, JSONL, or Parquet file with a text/message column.")
+    parser.add_argument("--twitter-limit", type=int, help="Optional maximum Twitter/X rows to import.")
+    parser.add_argument("--twitch-limit", type=int, help="Optional maximum Twitch rows to import.")
     args = parser.parse_args()
 
-    twitter = load_any(args.twitter_input, "twitter_x")
-    twitch = load_any(args.twitch_input, "twitch")
+    twitter = load_any(args.twitter_input, "twitter_x", args.twitter_limit)
+    twitch = load_any(args.twitch_input, "twitch", args.twitch_limit)
     if twitter is None:
         twitter = fallback_df("twitter_x", TWITTER_TEMPLATES)
     if twitch is None:

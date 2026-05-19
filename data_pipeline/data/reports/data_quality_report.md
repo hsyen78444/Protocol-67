@@ -6,25 +6,25 @@ This report summarizes the curated dataset for **Brainrot to English: Agent-Driv
 
 ## Dataset Size
 
-- Total processed rows: 303
-- Duplicate or unusable rows removed during curation: 1
+- Total processed rows: 304
+- Duplicate or unusable rows removed during curation: 3
 
 ## Source Coverage
 
 Rows per source:
 
 {
-  "curated_local_fallback": 104,
-  "twitch": 100,
-  "twitter_x": 99
+  "local_urban_dictionary_api": 104,
+  "twitter_x": 100,
+  "twitch": 100
 }
 
 Rows per platform:
 
 {
   "urban_dictionary": 104,
-  "twitch": 100,
-  "twitter_x": 99
+  "twitter_x": 100,
+  "twitch": 100
 }
 
 ## Label Distributions
@@ -32,18 +32,18 @@ Rows per platform:
 Sentiment distribution:
 
 {
-  "positive": 138,
-  "negative": 92,
-  "neutral": 70,
-  "mixed": 3
+  "positive": 133,
+  "negative": 88,
+  "neutral": 79,
+  "mixed": 4
 }
 
 Confidence distribution:
 
 {
-  "high": 219,
-  "medium": 81,
-  "low": 3
+  "high": 178,
+  "medium": 116,
+  "low": 10
 }
 
 ## Slang Coverage
@@ -51,73 +51,73 @@ Confidence distribution:
 Top 20 detected slang terms:
 
 {
-  "w": 12,
+  "w": 13,
   "rn": 11,
-  "slaps": 10,
-  "cooked": 9,
+  "bro": 10,
   "fr": 9,
-  "mid": 9,
+  "cooked": 9,
   "no cap": 9,
+  "slaps": 9,
   "clean": 9,
   "ngl": 8,
-  "locked in": 8,
+  "mid": 8,
   "sus": 8,
   "yapping": 8,
   "clutch": 8,
   "tweaking": 7,
+  "locked in": 7,
   "valid": 7,
   "side quest": 7,
   "wild": 7,
   "nerfed": 7,
-  "speedrun": 7,
-  "bro": 5
+  "speedrun": 7
 }
 
-Unknown term count: 81
+Unknown term count: 189
 
 Top unknown terms:
 
 {
   "testing": 16,
-  "passed": 4,
-  "meeting": 4,
+  "good": 7,
+  "too": 6,
+  "took": 4,
+  "going": 4,
+  "door": 4,
   "studying": 4,
   "confusing": 4,
   "timing": 4,
   "pathing": 4,
+  "being": 3,
+  "died": 3,
+  "cool": 3,
   "noodles": 3,
   "worked": 3,
   "walking": 3,
+  "meeting": 3,
   "activated": 3,
-  "took": 3,
-  "door": 3,
-  "saving": 3,
-  "missing": 2,
-  "called": 2,
-  "handled": 2,
-  "looks": 1,
-  "forced": 1,
-  "feed": 1
+  "passed": 3,
+  "saving": 3
 }
 
 ## Quality Flags
 
-Rows with at least one quality flag: 84
+Rows with at least one quality flag: 126
 
 Quality flag counts:
 
 {
-  "clean": 219,
-  "short_text": 7,
-  "contains_unknown_terms": 76,
-  "missing_slang": 3,
-  "low_translation_confidence": 3
+  "contains_unknown_terms": 116,
+  "clean": 178,
+  "short_text": 6,
+  "missing_slang": 10,
+  "low_translation_confidence": 10
 }
 
 ## Train / Validation / Test Sizes
 
 {
-  "train": 242,
+  "train": 243,
   "validation": 30,
   "test": 31
 }

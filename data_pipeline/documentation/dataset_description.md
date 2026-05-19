@@ -10,15 +10,15 @@ The pipeline combines Urban Dictionary-style definitions, Twitter/X-style short 
 
 ## Urban Dictionary-Style Source
 
-Urban Dictionary-style records provide term definitions and examples. This source is useful because it captures community explanations of slang, but it is noisy, subjective, and user-generated. The collection script therefore includes retries, metadata preservation, and a curated fallback dataset.
+Urban Dictionary-style records provide term definitions and examples. This source is useful because it captures community explanations of slang, but it is noisy, subjective, and user-generated. The collection script attempts the local compatible Urban Dictionary API `/api/search` endpoint, preserves metadata, retries failed requests, and uses a curated fallback dataset when local API collection is unavailable.
 
 ## Twitter/X-Style Source
 
-Twitter/X-style data represents short public posts where slang is often compressed, contextual, and rapidly changing. The project does not scrape Twitter/X directly. Instead, it supports local CSV and JSONL imports from approved exports or public datasets.
+Twitter/X-style data represents short public posts where slang is often compressed, contextual, and rapidly changing. The project does not scrape Twitter/X directly. Instead, it supports CSV, JSONL, and Parquet imports from approved exports or public datasets. When no import is provided, the generated rows are synthetic fallback examples rather than real platform posts.
 
 ## Twitch-Style Source
 
-Twitch-style chat messages provide fast, conversational internet language. They are useful for short messages, gaming slang, meme language, and repeated discourse markers.
+Twitch-style chat messages provide fast, conversational internet language. They are useful for short messages, gaming slang, meme language, and repeated discourse markers. When no import is provided, the generated rows are synthetic fallback examples rather than real chat messages. The importer can read a `message` column from Parquet datasets such as `lparkourer10/twitch_chat`.
 
 ## Manual Annotation Source
 

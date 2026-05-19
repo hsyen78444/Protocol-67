@@ -1,6 +1,8 @@
-# Brainrot to English Data Pipeline
+# Protocol 67: Agent-Driven Diachronic Linguistic Analysis
 
-This folder contains the Member 1 data engineering deliverable for **Brainrot to English: Agent-Driven Diachronic Linguistic Analysis**. It covers data collection, dataset curation, preprocessing, slang detection, train/validation/test split generation, data quality reporting, and documentation.
+## Scope
+
+This folder contains the **Data Engineering & Preprocessing** deliverable. It covers data collection, dataset curation, preprocessing, slang detection, train-ready dataset generation, data quality reporting, and documentation.
 
 It does not implement model fine-tuning, LoRA, FastAPI, PostgreSQL, or the full agent.
 

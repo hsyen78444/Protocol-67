@@ -6,7 +6,7 @@ It does not implement model fine-tuning, LoRA, FastAPI, PostgreSQL, or the full 
 
 ## Pipeline Flow
 
-1. Collect Urban Dictionary-style definitions and examples from a compatible local API at `http://localhost:8080/api/search`, then fall back to curated local dictionary rows if the API is unavailable or too small.
+1. Collect Urban Dictionary-style definitions and examples from a compatible local API at `http://localhost:8080/api/search`, then fall back to curated local dictionary rows if the API is unavailable or too small. The local API can be cloned from `https://github.com/kashyap010/unofficial-urban-dictionary-api`.
 2. Import Twitter/X-style and Twitch-style corpora from local CSV, JSONL, or Parquet files, or generate safe synthetic coursework fallback rows.
 3. Merge all raw sources while preserving source metadata.
 4. Clean text, detect slang, generate formal translations, assign sentiment labels, and flag quality issues.
@@ -73,7 +73,13 @@ python scripts/05_generate_train_val_test.py
 python scripts/06_generate_data_quality_report.py
 ```
 
-To use a different compatible Urban Dictionary-style API, set `URBAN_DICTIONARY_API_BASE_URL` before running the first script.
+The Urban Dictionary collector expects a compatible local API by default. To run one locally, clone and start this API project:
+
+```bash
+git clone https://github.com/kashyap010/unofficial-urban-dictionary-api
+```
+
+After the API is running at `http://localhost:8080`, run the first pipeline script. To use a different compatible Urban Dictionary-style API, set `URBAN_DICTIONARY_API_BASE_URL` before running the first script.
 
 Optional local corpus imports:
 

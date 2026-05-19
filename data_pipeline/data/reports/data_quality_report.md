@@ -6,25 +6,25 @@ This report summarizes the curated dataset for **Brainrot to English: Agent-Driv
 
 ## Dataset Size
 
-- Total processed rows: 303
-- Duplicate or unusable rows removed during curation: 1
+- Train-ready supervised rows: 431
+- All processed source rows: 3853
+- Active-learning candidate rows: 3422
+- Duplicate, unsafe, or not-train-ready rows excluded from supervised split: 3696
 
 ## Source Coverage
 
 Rows per source:
 
 {
-  "curated_local_fallback": 104,
-  "twitch": 100,
-  "twitter_x": 99
+  "twitch": 337,
+  "local_urban_dictionary_api": 94
 }
 
 Rows per platform:
 
 {
-  "urban_dictionary": 104,
-  "twitch": 100,
-  "twitter_x": 99
+  "twitch": 337,
+  "urban_dictionary": 94
 }
 
 ## Label Distributions
@@ -32,106 +32,113 @@ Rows per platform:
 Sentiment distribution:
 
 {
-  "positive": 138,
-  "negative": 92,
-  "neutral": 70,
+  "positive": 212,
+  "negative": 161,
+  "neutral": 55,
   "mixed": 3
 }
 
 Confidence distribution:
 
 {
-  "high": 219,
-  "medium": 81,
-  "low": 3
+  "high": 305,
+  "medium": 126
 }
 
 ## Slang Coverage
 
-Top 20 detected slang terms:
+Top 20 detected slang terms in the train-ready dataset:
 
 {
-  "w": 12,
-  "rn": 11,
-  "slaps": 10,
-  "cooked": 9,
-  "fr": 9,
-  "mid": 9,
-  "no cap": 9,
-  "clean": 9,
-  "ngl": 8,
-  "locked in": 8,
-  "sus": 8,
-  "yapping": 8,
-  "clutch": 8,
-  "tweaking": 7,
-  "valid": 7,
-  "side quest": 7,
-  "wild": 7,
-  "nerfed": 7,
-  "speedrun": 7,
-  "bro": 5
+  "feelsgoodman": 129,
+  "madge": 80,
+  "sadge": 32,
+  "omegalul": 14,
+  "idk": 12,
+  "bro": 10,
+  "pog": 8,
+  "copium": 8,
+  "real": 7,
+  "king": 6,
+  "lul": 6,
+  "l": 5,
+  "bet": 4,
+  "fit": 4,
+  "fr": 3,
+  "rn": 3,
+  "giving": 3,
+  "pepehands": 3,
+  "feelsstrongman": 3,
+  "monkas": 3
 }
 
-Unknown term count: 81
+Unknown term count across all processed source rows: 994
 
 Top unknown terms:
 
 {
-  "testing": 16,
-  "passed": 4,
-  "meeting": 4,
-  "studying": 4,
-  "confusing": 4,
-  "timing": 4,
-  "pathing": 4,
-  "noodles": 3,
-  "worked": 3,
-  "walking": 3,
-  "activated": 3,
-  "took": 3,
-  "door": 3,
-  "saving": 3,
-  "missing": 2,
-  "called": 2,
-  "handled": 2,
-  "looks": 1,
-  "forced": 1,
-  "feed": 1
+  "too": 32,
+  "larry": 19,
+  "theultracoolcutiebobo": 15,
+  "smadging": 14,
+  "fucking": 12,
+  "licked": 12,
+  "xoosd": 10,
+  "jazzy": 10,
+  "lol": 9,
+  "cool": 8,
+  "randomping": 7,
+  "wicked": 7,
+  "snoopydoly": 7,
+  "razzy": 7,
+  "jazzykat": 7,
+  "peepopissed": 7,
+  "fixed": 6,
+  "sorry": 6,
+  "pulled": 6,
+  "bapped": 6
 }
 
 ## Quality Flags
 
-Rows with at least one quality flag: 84
+Rows with at least one quality flag: 3548
 
 Quality flag counts:
 
 {
-  "clean": 219,
-  "short_text": 7,
-  "contains_unknown_terms": 76,
-  "missing_slang": 3,
-  "low_translation_confidence": 3
+  "contains_unknown_terms": 808,
+  "clean": 305,
+  "short_text": 2017,
+  "missing_slang": 3322,
+  "low_translation_confidence": 3322
+}
+
+Review action counts:
+
+{
+  "mine_or_ignore_no_dictionary_match": 2649,
+  "review_unknown_terms": 682,
+  "review_short_context": 91
 }
 
 ## Train / Validation / Test Sizes
 
 {
-  "train": 242,
-  "validation": 30,
-  "test": 31
+  "train": 344,
+  "validation": 43,
+  "test": 44
 }
 
 ## Limitations
 
 - Urban Dictionary-style definitions are user-generated and may contain subjective, noisy, or inconsistent explanations.
-- Synthetic fallback social data is useful for pipeline testing but cannot fully represent real platform diversity.
-- Dictionary-based slang detection provides transparency but may miss emerging spellings, sarcasm, and context-dependent meanings.
+- Raw Twitch chat is excellent for mining emerging slang and emotes, but it is not automatically a supervised translation dataset.
+- Dictionary-based slang detection provides transparency but may miss platform-specific emotes, sarcasm, and context-dependent meanings.
 - Rule-based formal translations are suitable for bootstrapping but should be reviewed before final model fine-tuning.
 
 ## Recommendations
 
-- Add human-reviewed manual annotations for ambiguous and high-frequency slang.
-- Replace fallback corpora with approved public datasets or exported data that complies with platform terms.
-- Expand the slang dictionary iteratively using active learning feedback from low-confidence examples.
+- Review `data/interim/active_learning_candidates.csv` for high-priority Twitch examples.
+- Expand `config/slang_dictionary.json` using `data/interim/unknown_term_summary.csv`.
+- Add human-reviewed manual translations for high-frequency unknown slang and emotes.
 - Add demographic and temporal metadata when ethically and legally available to support diachronic analysis.

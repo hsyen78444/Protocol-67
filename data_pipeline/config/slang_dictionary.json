@@ -105,5 +105,21 @@
   "valid take": {"meaning": "a reasonable opinion", "sentiment": "positive", "category": "approval", "example": "that is a valid take"},
   "hot take": {"meaning": "a provocative or unpopular opinion", "sentiment": "neutral", "category": "opinion", "example": "hot take, the sequel is better"},
   "safe take": {"meaning": "a cautious or widely accepted opinion", "sentiment": "neutral", "category": "opinion", "example": "that is a safe take"},
-  "ratio": {"meaning": "a response receiving more engagement than the original post", "sentiment": "negative", "category": "social_media", "example": "the reply caused a ratio"}
+  "ratio": {"meaning": "a response receiving more engagement than the original post", "sentiment": "negative", "category": "social_media", "example": "the reply caused a ratio"},
+  "feelsgoodman": {"meaning": "an expression of happiness, approval, or relief", "sentiment": "positive", "category": "twitch_emote", "example": "the stream ended well feelsgoodman"},
+  "feelsstrongman": {"meaning": "an expression of intense emotion or heartfelt reaction", "sentiment": "neutral", "category": "twitch_emote", "example": "that speech was emotional feelsstrongman"},
+  "sadge": {"meaning": "an expression of sadness or disappointment", "sentiment": "negative", "category": "twitch_emote", "example": "the run ended early sadge"},
+  "madge": {"meaning": "an expression of frustration or anger", "sentiment": "negative", "category": "twitch_emote", "example": "the game crashed again madge"},
+  "copium": {"meaning": "unrealistic optimism used to cope with disappointment", "sentiment": "negative", "category": "twitch_slang", "example": "chat was on copium after the loss"},
+  "pog": {"meaning": "an expression of excitement or amazement", "sentiment": "positive", "category": "twitch_emote", "example": "that play was pog"},
+  "poggers": {"meaning": "very exciting, impressive, or surprising", "sentiment": "positive", "category": "twitch_emote", "example": "the comeback was poggers"},
+  "kekw": {"meaning": "an expression of laughter or amusement", "sentiment": "positive", "category": "twitch_emote", "example": "that mistake was kekw"},
+  "lul": {"meaning": "an expression of laughter", "sentiment": "positive", "category": "twitch_emote", "example": "chat spammed lul"},
+  "omegalul": {"meaning": "an expression of strong laughter", "sentiment": "positive", "category": "twitch_emote", "example": "the timing was omegalul"},
+  "kappa": {"meaning": "a marker for sarcasm or playful irony", "sentiment": "neutral", "category": "twitch_emote", "example": "great plan kappa"},
+  "monkas": {"meaning": "an expression of anxiety, tension, or nervousness", "sentiment": "negative", "category": "twitch_emote", "example": "the final boss appeared monkas"},
+  "pepega": {"meaning": "a joking expression for foolish or silly behavior", "sentiment": "negative", "category": "twitch_emote", "example": "that decision was pepega"},
+  "pepehands": {"meaning": "an expression of sadness or emotional pain", "sentiment": "negative", "category": "twitch_emote", "example": "the farewell was pepehands"},
+  "jebaited": {"meaning": "tricked, baited, or misled", "sentiment": "negative", "category": "twitch_emote", "example": "chat got jebaited by the fake ending"},
+  "nyanpls": {"meaning": "a playful dance or celebration emote", "sentiment": "positive", "category": "twitch_emote", "example": "chat used nyanpls after the win"}
 }

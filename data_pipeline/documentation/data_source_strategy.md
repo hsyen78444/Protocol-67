@@ -2,19 +2,17 @@
 
 ## Urban Dictionary-Style Data
 
-Urban Dictionary-style data is useful because it provides community definitions and usage examples for slang. However, it is noisy, subjective, inconsistent, and sometimes unsafe. The pipeline treats it as a weak source that requires filtering and human review.
+Urban Dictionary-style data is useful because it provides community definitions and usage examples for slang. However, it is noisy, subjective, inconsistent, and sometimes unsafe. The pipeline first attempts a local compatible API clone at `http://localhost:8080/api/search`, then uses a curated local fallback if API collection is unavailable or returns too little usable data. The pipeline treats this source as weak data that requires filtering and human review.
 
-## Twitter/X Access
+## File-Based Design
 
-The project avoids direct Twitter/X scraping. Direct scraping can violate platform terms and the official API may require authentication, paid access, and strict compliance. The ingestion script instead accepts approved local CSV or JSONL exports.
-
-## Connector-Ready Design
-
-The pipeline is built so real datasets can replace fallback data without changing downstream scripts. If future approved public datasets are available, they can be imported through the same file-based connector pattern.
+The pipeline uses local files instead of scraping live platforms or downloading remote datasets at runtime. This makes runs reproducible and avoids committing large source datasets into Git.
 
 ## Twitch-Style Data
 
 Twitch-style data is useful for short-form conversational slang, gaming terms, memes, and fast-moving chat patterns. It helps the dataset capture forms of internet language that are not always present in dictionary definitions.
+
+The current Twitch datasource is a manually downloaded local Parquet file, `train-00000-of-00001.parquet`. The importer reads the `Message` column and limits imported rows by default so development runs stay manageable. The source dataset license and attribution requirements should be followed when using it in coursework or publication.
 
 ## Future Work
 

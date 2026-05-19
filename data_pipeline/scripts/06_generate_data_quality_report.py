@@ -12,6 +12,9 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 PROCESSED = ROOT / "data" / "processed"
 INTERIM = ROOT / "data" / "interim" / "merged_raw_dataset.csv"
+ALL_ROWS = ROOT / "data" / "interim" / "all_processed_rows.csv"
+REVIEW_QUEUE = ROOT / "data" / "interim" / "active_learning_candidates.csv"
+UNKNOWN_TERMS = ROOT / "data" / "interim" / "unknown_term_summary.csv"
 DATASET = PROCESSED / "brainrot_clean_dataset.csv"
 REPORT_DIR = ROOT / "data" / "reports"
 
@@ -37,14 +40,19 @@ def pipe_counter(series: pd.Series) -> Counter:
 def main() -> None:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(DATASET).fillna("")
+    all_rows = pd.read_csv(ALL_ROWS).fillna("") if ALL_ROWS.exists() else df.copy()
+    review = pd.read_csv(REVIEW_QUEUE).fillna("") if REVIEW_QUEUE.exists() else pd.DataFrame()
+    unknown_summary = pd.read_csv(UNKNOWN_TERMS).fillna("") if UNKNOWN_TERMS.exists() else pd.DataFrame()
     merged = pd.read_csv(INTERIM).fillna("") if INTERIM.exists() else pd.DataFrame()
     slang_counts = pipe_counter(df["detected_slang_terms"])
-    unknown_counts = pipe_counter(df["unknown_terms"])
-    flag_counts = pipe_counter(df["quality_flags"])
+    unknown_counts = pipe_counter(all_rows["unknown_terms"])
+    flag_counts = pipe_counter(all_rows["quality_flags"])
     duplicates_removed = max(len(merged) - len(df), 0) if not merged.empty else 0
 
     stats = {
-        "total_rows": int(len(df)),
+        "train_ready_rows": int(len(df)),
+        "all_processed_rows": int(len(all_rows)),
+        "active_learning_candidates": int(len(review)),
         "rows_per_source": df["source"].value_counts().to_dict(),
         "rows_per_platform": df["platform"].value_counts().to_dict(),
         "sentiment_distribution": df["sentiment"].value_counts().to_dict(),
@@ -52,9 +60,11 @@ def main() -> None:
         "top_20_slang_terms": dict(slang_counts.most_common(20)),
         "total_unknown_terms": int(sum(unknown_counts.values())),
         "top_unknown_terms": dict(unknown_counts.most_common(20)),
-        "rows_with_quality_flags": int((df["quality_flags"] != "clean").sum()),
+        "unknown_term_summary_top_20": unknown_summary.head(20).to_dict("records") if not unknown_summary.empty else [],
+        "rows_with_quality_flags": int((all_rows["quality_flags"] != "clean").sum()),
         "quality_flag_counts": dict(flag_counts),
         "duplicate_rows_removed": int(duplicates_removed),
+        "review_action_counts": review["suggested_action"].value_counts().to_dict() if not review.empty else {},
         "split_sizes": split_counts(),
     }
 
@@ -68,8 +78,10 @@ This report summarizes the curated dataset for **Brainrot to English: Agent-Driv
 
 ## Dataset Size
 
-- Total processed rows: {stats["total_rows"]}
-- Duplicate or unusable rows removed during curation: {stats["duplicate_rows_removed"]}
+- Train-ready supervised rows: {stats["train_ready_rows"]}
+- All processed source rows: {stats["all_processed_rows"]}
+- Active-learning candidate rows: {stats["active_learning_candidates"]}
+- Duplicate, unsafe, or not-train-ready rows excluded from supervised split: {stats["duplicate_rows_removed"]}
 
 ## Source Coverage
 
@@ -93,11 +105,11 @@ Confidence distribution:
 
 ## Slang Coverage
 
-Top 20 detected slang terms:
+Top 20 detected slang terms in the train-ready dataset:
 
 {json.dumps(stats["top_20_slang_terms"], indent=2)}
 
-Unknown term count: {stats["total_unknown_terms"]}
+Unknown term count across all processed source rows: {stats["total_unknown_terms"]}
 
 Top unknown terms:
 
@@ -111,6 +123,10 @@ Quality flag counts:
 
 {json.dumps(stats["quality_flag_counts"], indent=2)}
 
+Review action counts:
+
+{json.dumps(stats["review_action_counts"], indent=2)}
+
 ## Train / Validation / Test Sizes
 
 {json.dumps(stats["split_sizes"], indent=2)}
@@ -118,15 +134,15 @@ Quality flag counts:
 ## Limitations
 
 - Urban Dictionary-style definitions are user-generated and may contain subjective, noisy, or inconsistent explanations.
-- Synthetic fallback social data is useful for pipeline testing but cannot fully represent real platform diversity.
-- Dictionary-based slang detection provides transparency but may miss emerging spellings, sarcasm, and context-dependent meanings.
+- Raw Twitch chat is excellent for mining emerging slang and emotes, but it is not automatically a supervised translation dataset.
+- Dictionary-based slang detection provides transparency but may miss platform-specific emotes, sarcasm, and context-dependent meanings.
 - Rule-based formal translations are suitable for bootstrapping but should be reviewed before final model fine-tuning.
 
 ## Recommendations
 
-- Add human-reviewed manual annotations for ambiguous and high-frequency slang.
-- Replace fallback corpora with approved public datasets or exported data that complies with platform terms.
-- Expand the slang dictionary iteratively using active learning feedback from low-confidence examples.
+- Review `data/interim/active_learning_candidates.csv` for high-priority Twitch examples.
+- Expand `config/slang_dictionary.json` using `data/interim/unknown_term_summary.csv`.
+- Add human-reviewed manual translations for high-frequency unknown slang and emotes.
 - Add demographic and temporal metadata when ethically and legally available to support diachronic analysis.
 """
     (REPORT_DIR / "data_quality_report.md").write_text(report, encoding="utf-8")

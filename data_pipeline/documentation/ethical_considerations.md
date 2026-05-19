@@ -14,15 +14,15 @@ The preprocessing script includes a simple blocklist to keep the coursework data
 
 ## Privacy
 
-The fallback dataset is synthetic and does not contain real user identifiers. If real datasets are added later, usernames, links, IDs, and personal information should be removed unless there is a clear ethical and legal basis for retaining them.
+The Twitch datasource is user-generated chat text. Usernames, links, IDs, and personal information should be removed unless there is a clear ethical and legal basis for retaining them.
 
 ## Platform Terms of Service
 
-The pipeline avoids direct Twitter/X scraping and is designed for approved exports or public datasets. Future collection should follow platform terms, API rules, and institutional guidance.
+The pipeline avoids direct live-platform scraping and uses local approved dataset files. Future collection should follow platform terms, API rules, dataset licenses, and institutional guidance.
 
-## Synthetic Fallback Limitations
+## Dataset Limitations
 
-Synthetic fallback rows are useful for testing pipeline mechanics, but they cannot replace real linguistic diversity. They may simplify patterns and miss sarcasm, code-switching, and community-specific meanings.
+A single Twitch chat dataset cannot represent all internet slang communities. It may overrepresent gaming and livestream culture, and it may miss sarcasm, code-switching, and community-specific meanings from other platforms.
 
 ## Human Review
 

@@ -7,7 +7,7 @@ It does not implement model fine-tuning, LoRA, FastAPI, PostgreSQL, or the full 
 ## Pipeline Flow
 
 1. Collect Urban Dictionary-style definitions and examples from a compatible local API at `http://localhost:8080/api/search`, then fall back to curated local dictionary rows if the API is unavailable or too small. The local API can be cloned from `https://github.com/kashyap010/unofficial-urban-dictionary-api`.
-2. Import Twitter/X-style and Twitch-style corpora from local CSV, JSONL, or Parquet files, or generate safe synthetic coursework fallback rows.
+2. Import a Twitch chat corpus from the local `train-00000-of-00001.parquet` file.
 3. Merge all raw sources while preserving source metadata.
 4. Clean text, detect slang, generate formal translations, assign sentiment labels, and flag quality issues.
 5. Create reproducible train, validation, and test splits.
@@ -17,16 +17,17 @@ It does not implement model fine-tuning, LoRA, FastAPI, PostgreSQL, or the full 
 
 ```text
 data_pipeline/
-├── config/
-├── data/
-│   ├── raw/
-│   ├── interim/
-│   ├── processed/
-│   └── reports/
-├── documentation/
-├── scripts/
-├── README.md
-└── requirements.txt
+|-- config/
+|-- data/
+|   |-- raw/
+|   |-- interim/
+|   |-- processed/
+|   `-- reports/
+|-- documentation/
+|-- scripts/
+|-- README.md
+|-- requirements.txt
+`-- train-00000-of-00001.parquet  # local datasource, ignored by Git
 ```
 
 ## Create a Virtual Environment
@@ -81,26 +82,51 @@ git clone https://github.com/kashyap010/unofficial-urban-dictionary-api
 
 After the API is running at `http://localhost:8080`, run the first pipeline script. To use a different compatible Urban Dictionary-style API, set `URBAN_DICTIONARY_API_BASE_URL` before running the first script.
 
-Optional local corpus imports:
+## Twitch Datasource
 
-```bash
-python scripts/02_import_social_corpus.py --twitter-input path/to/twitter.csv --twitch-input path/to/twitch.jsonl
+Place the downloaded Twitch dataset at:
+
+```text
+data_pipeline/train-00000-of-00001.parquet
 ```
 
-Input files should contain a `text` or `message` column. CSV, JSONL, and Parquet inputs are supported. If no files are provided, the script generates safe synthetic fallback corpora with at least 100 Twitter/X-style rows and 100 Twitch-style rows.
+The downloaded Parquet file has a `Message` column. The importer reads that column, normalizes it to `text`, and writes `data/raw/twitch_corpus_raw.csv`.
 
-Example Hugging Face Parquet import:
+By default, the importer reads 5,000 rows so local runs stay manageable:
 
-```bash
-python scripts/02_import_social_corpus.py --twitch-input "hf://datasets/lparkourer10/twitch_chat/data/train-00000-of-00001.parquet" --twitch-limit 5000
+```powershell
+python scripts/02_import_social_corpus.py
 ```
 
-Use a row limit for large sources.
+To use a different local file:
+
+```powershell
+python scripts/02_import_social_corpus.py --twitch-input path\to\twitch.parquet
+```
+
+To change the row limit:
+
+```powershell
+python scripts/02_import_social_corpus.py --twitch-limit 10000
+```
+
+Use `--twitch-limit 0` to import all rows. The full downloaded dataset has millions of rows, so importing all rows may take a long time and create large output files.
+
+Dataset citation:
+
+```bibtex
+@misc{twitchchat2025,
+  title = {Twitch Chat},
+  author = {parkourer10},
+  year = {2025},
+  publisher = {Hugging Face Datasets},
+  url = {https://huggingface.co/datasets/lparkourer10/twitch_chat}
+}
+```
 
 ## Expected Outputs
 
 - `data/raw/urban_dictionary_raw.csv`
-- `data/raw/twitter_corpus_raw.csv`
 - `data/raw/twitch_corpus_raw.csv`
 - `data/interim/merged_raw_dataset.csv`
 - `data/interim/candidate_slang_pairs.csv`
@@ -113,21 +139,22 @@ Use a row limit for large sources.
 
 ## Git Hygiene
 
-Do not commit virtual environments, caches, local secrets, or temporary files. The root `.gitignore` ignores:
+Do not commit virtual environments, caches, local secrets, temporary files, or downloaded datasets. The root `.gitignore` ignores:
 
 - `.venv/`, `venv/`, `env/`, and `ENV/`
 - Python cache files such as `__pycache__/` and `*.pyc`
 - local environment files such as `.env`
 - test/tool caches such as `.pytest_cache/`, `.mypy_cache/`, and `.ruff_cache/`
 - OS/editor noise such as `.DS_Store`, `Thumbs.db`, and `*.log`
+- local Parquet datasources such as `data_pipeline/*.parquet`
 
 The current CSV and report files under `data/` are tracked in this repository. Keep them tracked if they are coursework deliverables; otherwise, remove them from Git tracking and add broader `data_pipeline/data/` ignore rules.
 
 ## Troubleshooting
 
 - If the local Urban Dictionary-style API fails, the collector writes curated fallback rows so the pipeline can continue.
-- If `scikit-learn`, `pandas`, or `requests` is missing, reactivate the virtual environment and run `python -m pip install -r requirements.txt`.
-- If real social data is unavailable, use the fallback corpus for coursework testing.
+- If `scikit-learn`, `pandas`, `pyarrow`, or `requests` is missing, reactivate the virtual environment and run `python -m pip install -r requirements.txt`.
+- If Twitch import fails, confirm `train-00000-of-00001.parquet` exists in `data_pipeline/` and contains a `Message`, `message`, or `text` column.
 - If many rows have `contains_unknown_terms`, expand `config/slang_dictionary.json` and rerun preprocessing.
 
 ## Dataset Use

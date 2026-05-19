@@ -6,19 +6,15 @@ This dataset supports the project **Brainrot to English: Agent-Driven Diachronic
 
 ## Data Source Types
 
-The pipeline combines Urban Dictionary-style definitions, Twitter/X-style short posts, Twitch-style live chat messages, and optional manual annotations. These source types represent both explanatory slang definitions and natural short-form usage.
+The pipeline combines Urban Dictionary-style definitions, Twitch-style live chat messages, and optional manual annotations. These source types represent both explanatory slang definitions and natural short-form usage.
 
 ## Urban Dictionary-Style Source
 
 Urban Dictionary-style records provide term definitions and examples. This source is useful because it captures community explanations of slang, but it is noisy, subjective, and user-generated. The collection script attempts the local compatible Urban Dictionary API `/api/search` endpoint, preserves metadata, retries failed requests, and uses a curated fallback dataset when local API collection is unavailable.
 
-## Twitter/X-Style Source
-
-Twitter/X-style data represents short public posts where slang is often compressed, contextual, and rapidly changing. The project does not scrape Twitter/X directly. Instead, it supports CSV, JSONL, and Parquet imports from approved exports or public datasets. When no import is provided, the generated rows are synthetic fallback examples rather than real platform posts.
-
 ## Twitch-Style Source
 
-Twitch-style chat messages provide fast, conversational internet language. They are useful for short messages, gaming slang, meme language, and repeated discourse markers. When no import is provided, the generated rows are synthetic fallback examples rather than real chat messages. The importer can read a `message` column from Parquet datasets such as `lparkourer10/twitch_chat`.
+Twitch-style chat messages provide fast, conversational internet language. They are useful for short messages, gaming slang, meme language, and repeated discourse markers. The importer reads the local `train-00000-of-00001.parquet` datasource, detects its `Message` column, normalizes it to `text`, and writes `data/raw/twitch_corpus_raw.csv`.
 
 ## Manual Annotation Source
 

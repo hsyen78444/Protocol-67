@@ -24,5 +24,6 @@ Thumbs.db
 
 *.log
 
+data_pipeline/*.parquet
 data_pipeline/data/raw/*.tmp
 data_pipeline/data/raw/*.bak

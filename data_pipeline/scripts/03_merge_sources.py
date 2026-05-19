@@ -77,7 +77,6 @@ def main() -> None:
     merged = pd.concat(
         [
             load_urban(),
-            load_social("twitter_corpus_raw.csv", "twitter_x"),
             load_social("twitch_corpus_raw.csv", "twitch"),
             load_manual(),
         ],

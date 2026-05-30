@@ -33,6 +33,16 @@ BLOCKLIST = {
     "nazi",
 }
 INFORMAL_MARKERS = re.compile(r"^[a-z]*(?:zz|xx|oo|rr|lol|omg|btw|smh|pls|broo)[a-z]*$")
+DEFINITION_FRAGMENT_RE = re.compile(
+    r"\b("
+    r"someone perceived as|an expression of|content or language that|"
+    r"performed very well or looked impressive|general mood, feeling, or atmosphere|"
+    r"acting unusually, panicking, or overreacting|publicly disagreed with or outperformed|"
+    r"reasonable, acceptable, or understandable|excellent, exciting, or stylish|"
+    r"truthfully or without exaggeration|a win or successful outcome|a loss or poor outcome"
+    r")\b",
+    re.IGNORECASE,
+)
 
 
 def load_dictionary() -> Dict[str, Dict[str, str]]:
@@ -137,6 +147,28 @@ def translate(text: str, detected: List[str], dictionary: Dict[str, Dict[str, st
     return translated
 
 
+def normalize_manual_translation(text: str) -> str:
+    text = re.sub(r"\s+", " ", str(text)).strip()
+    if not text:
+        return ""
+    text = text[0].upper() + text[1:]
+    if text[-1] not in ".!?":
+        text += "."
+    return text
+
+
+def is_manual_annotation(row: pd.Series) -> bool:
+    return str(row.get("source_type", "")).strip() == "human_annotation" or str(row.get("source", "")).strip() == "manual_annotation"
+
+
+def has_manual_translation(row: pd.Series) -> bool:
+    return is_manual_annotation(row) and bool(str(row.get("formal_translation", "")).strip())
+
+
+def looks_definition_like(text: str) -> bool:
+    return bool(DEFINITION_FRAGMENT_RE.search(text))
+
+
 def sentiment_label(detected: List[str], dictionary: Dict[str, Dict[str, str]]) -> str:
     labels = [dictionary[term]["sentiment"] for term in detected if term in dictionary]
     non_neutral = {label for label in labels if label != "neutral"}
@@ -147,14 +179,16 @@ def sentiment_label(detected: List[str], dictionary: Dict[str, Dict[str, str]]) 
     return "neutral"
 
 
-def quality_flags(clean_text: str, detected: List[str], unknown: List[str], formal: str) -> List[str]:
+def quality_flags(clean_text: str, detected: List[str], unknown: List[str], formal: str, manual_translation: bool) -> List[str]:
     flags = []
     if not detected:
         flags.append("missing_slang")
     if len(clean_text.split()) < 4:
         flags.append("short_text")
-    if unknown:
+    if unknown and not manual_translation:
         flags.append("contains_unknown_terms")
+    if not manual_translation and looks_definition_like(formal):
+        flags.append("definition_like_translation")
     if not detected or clean_text.rstrip(".") == formal.lower().rstrip("."):
         flags.append("low_translation_confidence")
     return flags or ["clean"]
@@ -171,12 +205,12 @@ def confidence(detected: List[str], unknown: List[str], flags: List[str]) -> str
     return "low"
 
 
-def is_train_ready(clean_text: str, detected: List[str], flags: List[str], formal: str) -> bool:
+def is_train_ready(clean_text: str, detected: List[str], flags: List[str], formal: str, manual_translation: bool) -> bool:
     if not detected:
         return False
     if len(clean_text.split()) < 4:
         return False
-    if "low_translation_confidence" in flags:
+    if not manual_translation:
         return False
     return clean_text.rstrip(".") != formal.lower().rstrip(".")
 
@@ -226,10 +260,17 @@ def main() -> None:
         seen.add(clean)
         detected = detect_terms(clean, dictionary)
         unknown = detect_unknown_terms(clean, detected, dictionary)
-        formal = translate(clean, detected, dictionary)
-        flags = quality_flags(clean, detected, unknown, formal)
+        manual_translation = has_manual_translation(row)
+        formal = (
+            normalize_manual_translation(row["formal_translation"])
+            if manual_translation
+            else translate(clean, detected, dictionary)
+        )
+        flags = quality_flags(clean, detected, unknown, formal, manual_translation)
         conf = confidence(detected, unknown, flags)
-        ready = is_train_ready(clean, detected, flags, formal)
+        if manual_translation and flags == ["clean"]:
+            conf = "high"
+        ready = is_train_ready(clean, detected, flags, formal, manual_translation)
 
         for term in detected:
             candidate_rows.append(

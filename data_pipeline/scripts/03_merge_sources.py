@@ -11,7 +11,18 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 OUT = ROOT / "data" / "interim" / "merged_raw_dataset.csv"
-COLS = ["id", "raw_text", "term", "definition", "example", "platform", "source", "source_type", "collection_date"]
+COLS = [
+    "id",
+    "raw_text",
+    "term",
+    "definition",
+    "example",
+    "formal_translation",
+    "platform",
+    "source",
+    "source_type",
+    "collection_date",
+]
 
 
 def load_urban() -> pd.DataFrame:
@@ -25,6 +36,7 @@ def load_urban() -> pd.DataFrame:
             "term": df.get("term", ""),
             "definition": df.get("definition", ""),
             "example": df.get("example", ""),
+            "formal_translation": "",
             "platform": "urban_dictionary",
             "source": df.get("source", "urban_dictionary"),
             "source_type": "definition_api_or_fallback",
@@ -44,6 +56,7 @@ def load_social(filename: str, platform: str) -> pd.DataFrame:
             "term": "",
             "definition": "",
             "example": "",
+            "formal_translation": "",
             "platform": df.get("platform", platform),
             "source": platform,
             "source_type": df.get("source_type", "local_or_fallback_corpus"),
@@ -64,6 +77,7 @@ def load_manual() -> pd.DataFrame:
             "term": df.get("term", ""),
             "definition": df.get("definition", ""),
             "example": df.get("example", ""),
+            "formal_translation": df.get("formal_translation", ""),
             "platform": df.get("platform", "manual"),
             "source": "manual_annotation",
             "source_type": "human_annotation",

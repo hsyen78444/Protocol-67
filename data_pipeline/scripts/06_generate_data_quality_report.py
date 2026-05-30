@@ -136,13 +136,13 @@ Review action counts:
 - Urban Dictionary-style definitions are user-generated and may contain subjective, noisy, or inconsistent explanations.
 - Raw Twitch chat is excellent for mining emerging slang and emotes, but it is not automatically a supervised translation dataset.
 - Dictionary-based slang detection provides transparency but may miss platform-specific emotes, sarcasm, and context-dependent meanings.
-- Rule-based formal translations are suitable for bootstrapping but should be reviewed before final model fine-tuning.
+- Machine-generated formal translations are kept out of the supervised split and should be reviewed before they are added to fine-tuning data.
 
 ## Recommendations
 
 - Review `data/interim/active_learning_candidates.csv` for high-priority Twitch examples.
 - Expand `config/slang_dictionary.json` using `data/interim/unknown_term_summary.csv`.
-- Add human-reviewed manual translations for high-frequency unknown slang and emotes.
+- Add more human-reviewed manual translations for high-frequency unknown slang and emotes.
 - Add demographic and temporal metadata when ethically and legally available to support diachronic analysis.
 """
     (REPORT_DIR / "data_quality_report.md").write_text(report, encoding="utf-8")

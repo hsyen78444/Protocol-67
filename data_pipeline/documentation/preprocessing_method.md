@@ -12,9 +12,9 @@ Rows with empty text are removed. Exact duplicate clean texts are removed before
 
 The slang detector uses dictionary-based matching. Multi-word phrases are matched before single-word terms so expressions such as `no cap`, `let him cook`, `hits different`, and `main character` are preserved as complete units. Short terms such as `w` and `l` are matched only as standalone tokens.
 
-## Slang Expansion
+## Translation Target Creation
 
-Formal translation is rule-based. Known slang terms are replaced with formal meanings from `config/slang_dictionary.json`, with a small set of contextual replacements for common terms such as `bro`, `fit`, `fr`, and `ngl`.
+The supervised fine-tuning dataset uses human-reviewed targets from `data/raw/manual_annotations.csv`. Dictionary-based replacement is still generated for traceability and review, but those machine-generated rows are not promoted into `data/processed/brainrot_clean_dataset.csv`.
 
 ## Unknown Term Detection
 
@@ -36,4 +36,4 @@ Sentiment is inferred from the detected terms in the slang dictionary. If positi
 
 ## Train / Validation / Test Generation
 
-The split script removes duplicate `clean_text` rows and creates reproducible 80/10/10 train, validation, and test files with a fixed random seed. Stratified splitting is used when sentiment classes have enough examples.
+The split script removes duplicate `clean_text` rows and creates reproducible train, validation, and test files with a fixed random seed. Stratified splitting is used when `scikit-learn` is installed; otherwise, the script falls back to a deterministic pandas split.

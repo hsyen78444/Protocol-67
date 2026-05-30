@@ -1,5 +1,7 @@
 import json
 from pathlib import Path
+import torch
+
 
 from model_service.src.translator import translate_text
 

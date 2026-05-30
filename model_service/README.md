@@ -45,3 +45,10 @@ The JSONL files are already instruction-style records:
 - If compute is limited: use a hosted model for generation and keep local code as the integration wrapper.
 
 Do not commit model weights or adapters.
+
+## Evaluation Results
+
+### Initial evaluation
+- Exact match rate: 1.0 (data is inflated, test outputs are generated from the same dictionary)
+
+

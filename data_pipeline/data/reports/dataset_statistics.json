@@ -1,48 +1,44 @@
 {
-  "train_ready_rows": 431,
-  "all_processed_rows": 3853,
-  "active_learning_candidates": 3422,
+  "train_ready_rows": 107,
+  "all_processed_rows": 3960,
+  "active_learning_candidates": 3853,
   "rows_per_source": {
-    "twitch": 337,
-    "local_urban_dictionary_api": 94
+    "manual_annotation": 107
   },
   "rows_per_platform": {
-    "twitch": 337,
-    "urban_dictionary": 94
+    "manual": 107
   },
   "sentiment_distribution": {
-    "positive": 212,
-    "negative": 161,
-    "neutral": 55,
-    "mixed": 3
+    "positive": 44,
+    "neutral": 34,
+    "negative": 29
   },
   "confidence_distribution": {
-    "high": 305,
-    "medium": 126
+    "high": 107
   },
   "top_20_slang_terms": {
-    "feelsgoodman": 129,
-    "madge": 80,
-    "sadge": 32,
-    "omegalul": 14,
-    "idk": 12,
-    "bro": 10,
-    "pog": 8,
-    "copium": 8,
-    "real": 7,
-    "king": 6,
-    "lul": 6,
-    "l": 5,
-    "bet": 4,
-    "fit": 4,
-    "fr": 3,
-    "rn": 3,
-    "giving": 3,
-    "pepehands": 3,
-    "feelsstrongman": 3,
-    "monkas": 3
+    "clean": 2,
+    "fr": 1,
+    "ngl": 1,
+    "idk": 1,
+    "imo": 1,
+    "rn": 1,
+    "mid": 1,
+    "cooked": 1,
+    "ate": 1,
+    "slay": 1,
+    "rizz": 1,
+    "cap": 1,
+    "no cap": 1,
+    "ratioed": 1,
+    "w": 1,
+    "l": 1,
+    "tweaking": 1,
+    "slaps": 1,
+    "goated": 1,
+    "sus": 1
   },
-  "total_unknown_terms": 994,
+  "total_unknown_terms": 1021,
   "top_unknown_terms": {
     "too": 32,
     "larry": 19,
@@ -147,23 +143,25 @@
       "frequency": 6
     }
   ],
-  "rows_with_quality_flags": 3548,
+  "rows_with_quality_flags": 3766,
   "quality_flag_counts": {
     "contains_unknown_terms": 808,
-    "clean": 305,
+    "clean": 194,
     "short_text": 2017,
+    "definition_like_translation": 347,
     "missing_slang": 3322,
     "low_translation_confidence": 3322
   },
-  "duplicate_rows_removed": 3696,
+  "duplicate_rows_removed": 4127,
   "review_action_counts": {
     "mine_or_ignore_no_dictionary_match": 2649,
-    "review_unknown_terms": 682,
+    "review_unknown_terms": 808,
+    "review_translation_quality": 305,
     "review_short_context": 91
   },
   "split_sizes": {
-    "train": 344,
-    "validation": 43,
-    "test": 44
+    "train": 85,
+    "validation": 10,
+    "test": 12
   }
 }

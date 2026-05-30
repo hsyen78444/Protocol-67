@@ -11,7 +11,11 @@ os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
+
+try:
+    from sklearn.model_selection import train_test_split
+except ModuleNotFoundError:
+    train_test_split = None
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,6 +30,28 @@ def stratify_or_none(df: pd.DataFrame):
     return df["sentiment"] if len(counts) > 1 and counts.min() >= 2 else None
 
 
+def deterministic_split(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    if train_test_split is not None:
+        train, temp = train_test_split(
+            df,
+            test_size=0.20,
+            random_state=RANDOM_SEED,
+            stratify=stratify_or_none(df),
+        )
+        val, test = train_test_split(
+            temp,
+            test_size=0.50,
+            random_state=RANDOM_SEED,
+            stratify=stratify_or_none(temp),
+        )
+        return train, val, test
+
+    shuffled = df.sample(frac=1, random_state=RANDOM_SEED).reset_index(drop=True)
+    train_end = int(len(shuffled) * 0.80)
+    val_end = train_end + int(len(shuffled) * 0.10)
+    return shuffled.iloc[:train_end], shuffled.iloc[train_end:val_end], shuffled.iloc[val_end:]
+
+
 def main() -> None:
     df = pd.read_csv(IN_FILE).fillna("")
     if len(df) < 3:
@@ -36,18 +62,7 @@ def main() -> None:
     df["id"] = range(1, len(df) + 1)
     duplicates_removed = before - len(df)
 
-    train, temp = train_test_split(
-        df,
-        test_size=0.20,
-        random_state=RANDOM_SEED,
-        stratify=stratify_or_none(df),
-    )
-    val, test = train_test_split(
-        temp,
-        test_size=0.50,
-        random_state=RANDOM_SEED,
-        stratify=stratify_or_none(temp),
-    )
+    train, val, test = deterministic_split(df)
 
     for name, split in [("train.csv", train), ("validation.csv", val), ("test.csv", test)]:
         split.sort_values("id").to_csv(PROCESSED / name, index=False)

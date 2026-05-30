@@ -18,7 +18,7 @@ Twitch-style chat messages provide fast, conversational internet language. They 
 
 ## Manual Annotation Source
 
-Manual annotations can be added through `data/raw/manual_annotations.csv`. Human review is especially important for ambiguous slang, emerging terms, and examples marked as low confidence.
+Manual annotations are added through `data/raw/manual_annotations.csv`. These rows include a human-reviewed `formal_translation` target and are the only rows promoted into the supervised fine-tuning split. Human review is especially important for ambiguous slang, emerging terms, and examples marked as low confidence.
 
 ## Final Dataset Schema
 
@@ -28,7 +28,7 @@ The final processed dataset is saved as `data/processed/brainrot_clean_dataset.c
 - `raw_text`: original source text
 - `clean_text`: normalized text after preprocessing
 - `detected_slang_terms`: dictionary-matched slang terms
-- `formal_translation`: rule-based formal English translation
+- `formal_translation`: human-reviewed formal English translation for supervised rows
 - `sentiment`: positive, negative, neutral, or mixed
 - `confidence_label`: high, medium, or low
 - `source`: source metadata
@@ -38,4 +38,4 @@ The final processed dataset is saved as `data/processed/brainrot_clean_dataset.c
 
 ## Downstream Support
 
-The dataset supports model fine-tuning by providing paired informal and formal text. It supports sentiment analysis through rule-based weak labels. It supports confidence scoring through known/unknown slang coverage and quality flags. It supports an active learning loop by identifying examples that need human review, especially low-confidence rows and rows with unknown slang.
+The dataset supports model fine-tuning by providing paired informal and formal text from human-reviewed annotations. It supports sentiment analysis through rule-based weak labels. It supports confidence scoring through known/unknown slang coverage and quality flags. It supports an active learning loop by identifying examples that need human review, especially low-confidence rows and rows with unknown slang.

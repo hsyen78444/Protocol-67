@@ -50,11 +50,11 @@ Do not commit model weights or adapters.
 
 1. The scripts to train the models are **train_lora.py** and **train_lorav2.py**, with models *Qwen2.5-3B-Instruct* and *Llama-3.2-3B-Instruct* respectively.
 
-2. You may use another model for training, but since each model may have different tuning parameters, it is recommended that you create a new script for the new model.
+2. You may use another model for training, but since each model may have different tuning parameters, it is recommended that you create a new script for the new model. If you want to use another model, you may copy the existing scripts and make changes, but make sure to set the output directory as "model_service/outputs/<model-name>".
 
 3. Once your virtual environment is setup (refer to README of the data_pipeline module), run **python -m model_service.scripts.train_lorav2** to train the model. Change the name of the script to your script if you have created a new one.
 
-4. Use **python -m model_service.scripts.evaluate** to evaluate the model's exact match rate. Make sure to change the **BASE_MODEL** and **ADAPTER_DIR** in the *translator.py* file before you run the evaluate script.
+4. Use **python -m model_service.scripts.evaluate** to evaluate the model's exact match rate. Make sure to change the **BASE_MODEL** and **ADAPTER_DIR** in the *translator.py* file before you run the evaluate script. The **ADAPTER_DIR** can be found in the *outputs* folder under this model_service folder. The folder should appear only after you run the model training script.
 
 ## Evaluation Results
 
@@ -68,4 +68,4 @@ Do not commit model weights or adapters.
 - Exact match rate: 0
 
 ### Llama-3.2-3B-Instruct
-- Exact match rate: 0
+- Exact match rate: 0.08333

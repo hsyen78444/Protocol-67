@@ -2,50 +2,131 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
-BASE_MODEL  = "Qwen/Qwen2.5-0.5B-Instruct"
-ADAPTER_DIR = "model_service/outputs/qwen0.5b-slang-lora"
+BASE_MODEL  = "meta-llama/Llama-3.2-3B-Instruct"
+ADAPTER_DIR = "model_service/outputs/llama3b-slang-lora"
+
+# Known slang terms from your training data
+SLANG_TERMS = {
+    "fr", "imo", "rn", "mid", "cooked", "ate", "slay", "rizz", "cap", "no cap",
+    "ratioed", "ratio", "w", "tweaking", "slaps", "goated", "sus", "vibe", "vibes",
+    "npc", "lowkey", "highkey", "bet", "based", "cringe", "locked in", "brainrot",
+    "skibidi", "gyatt", "fanum tax", "aura", "aura farming", "yapping", "touch grass",
+    "let him cook", "fell off", "valid", "bussin", "drip", "fit", "opp", "glazing",
+    "pookie", "real", "canon event", "mood", "fire", "lit", "clean", "peak", "wild",
+    "bruh", "fam", "queen", "king", "stan", "ship", "soft launch", "hard launch",
+    "rent free", "living rent free", "it is giving", "giving", "big yikes", "yikes",
+    "vibe check", "skill issue", "clutch", "sweat", "tryhard", "carried", "nerfed",
+    "buffed", "speedrun", "irl", "jomo", "vibe coded", "girlboss", "devoured",
+    "salty", "chill", "unserious", "valid take", "hot take", "safe take",
+}
+
+# Simple sentiment heuristic — expand as needed
+_POSITIVE = {"slay", "ate", "goated", "bussin", "fire", "lit", "clutch", "buffed", "slaps", "w", "clean", "peak"}
+_NEGATIVE = {"mid", "cooked", "cap", "ratioed", "sus", "npc", "cringe", "fell off", "nerfed", "salty", "yikes"}
 
 _model = None
 _tokenizer = None
+
 
 def _load():
     global _model, _tokenizer
     if _model is None:
         _tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
         _tokenizer.pad_token = _tokenizer.eos_token
-        base_model = AutoModelForCausalLM.from_pretrained(
+        base = AutoModelForCausalLM.from_pretrained(
             BASE_MODEL,
             dtype=torch.float16,
             device_map="auto",
             trust_remote_code=True,
         )
-        _model = PeftModel.from_pretrained(base_model, ADAPTER_DIR)
+        _model = PeftModel.from_pretrained(base, ADAPTER_DIR)
         _model.eval()
+
+
+def _detect_metadata(text: str) -> tuple[list[str], str]:
+    """Returns (detected_slang_terms, sentiment)."""
+    lowered = text.lower()
+
+    # Sort by length descending so multi-word terms match first
+    detected = [s for s in sorted(SLANG_TERMS, key=len, reverse=True) if s in lowered]
+
+    if any(s in _POSITIVE for s in detected):
+        sentiment = "positive"
+    elif any(s in _NEGATIVE for s in detected):
+        sentiment = "negative"
+    else:
+        sentiment = "neutral"
+
+    return detected, sentiment
+
+
+def _build_prompt(text: str, slang_terms: list[str], sentiment: str) -> str:
+    slang_str = ", ".join(slang_terms) if slang_terms else "none"
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are a translator that converts internet slang and brainrot text "
+                "into clear, formal English. You will be given the sentiment of the "
+                "input and the slang terms present to help guide your translation."
+            ),
+        },
+        {
+            "role": "user",
+            "content": (
+                f"Sentiment: {sentiment}\n"
+                f"Slang terms: {slang_str}\n"
+                f"Translate: {text}"
+            ),
+        },
+    ]
+    return _tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,  # adds the assistant turn opener
+    )
+
+
+def _estimate_confidence(slang_terms: list[str], unknown_terms: list[str]) -> float:
+    """Heuristic: penalise unknown terms."""
+    if not slang_terms and not unknown_terms:
+        return 0.5   # no slang detected at all — uncertain
+    if not unknown_terms:
+        return 0.9
+    ratio = len(unknown_terms) / max(len(slang_terms) + len(unknown_terms), 1)
+    return round(max(0.4, 0.9 - ratio * 0.5), 2)
+
 
 def translate_text(text: str) -> dict:
     _load()
-    prompt = (
-        f"Instruction: Translate the following internet slang or brainrot text "
-        f"into clear formal English.\n"
-        f"Input: {text}\n"
-        f"Output:"
-    )
+
+    detected_slang, sentiment = _detect_metadata(text)
+    unknown_terms = []  # placeholder — populate if you add an OOV detector
+
+    prompt = _build_prompt(text, detected_slang, sentiment)
+
     inputs = _tokenizer(prompt, return_tensors="pt").to(_model.device)
+    input_len = inputs["input_ids"].shape[1]
+
     with torch.no_grad():
         outputs = _model.generate(
             **inputs,
             max_new_tokens=128,
             temperature=0.3,
             do_sample=True,
+            repetition_penalty=1.3,       # prevents looping
             pad_token_id=_tokenizer.eos_token_id,
         )
-    decoded = _tokenizer.decode(outputs[0], skip_special_tokens=True)
-    translation = decoded.split("Output:")[-1].strip()
+
+    # Slice off the prompt tokens — only decode what the model generated
+    new_tokens = outputs[0][input_len:]
+    translation = _tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
     return {
         "formal_translation": translation,
-        "confidence": 0.85,
-        "detected_slang_terms": [],
-        "unknown_terms": [],
-        "model_version": "qwen0.5b-lora-v1"
+        "confidence": _estimate_confidence(detected_slang, unknown_terms),
+        "detected_slang_terms": detected_slang,
+        "unknown_terms": unknown_terms,
+        "sentiment": sentiment,
+        "model_version": "qwen0.5b-lora-v1",
     }

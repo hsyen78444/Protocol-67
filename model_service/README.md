@@ -46,9 +46,26 @@ The JSONL files are already instruction-style records:
 
 Do not commit model weights or adapters.
 
+## Training Model
+
+1. The scripts to train the models are **train_lora.py** and **train_lorav2.py**, with models *Qwen2.5-3B-Instruct* and *Llama-3.2-3B-Instruct* respectively.
+
+2. You may use another model for training, but since each model may have different tuning parameters, it is recommended that you create a new script for the new model.
+
+3. Once your virtual environment is setup (refer to README of the data_pipeline module), run **python -m model_service.scripts.train_lorav2** to train the model. Change the name of the script to your script if you have created a new one.
+
+4. Use **python -m model_service.scripts.evaluate** to evaluate the model's exact match rate. Make sure to change the **BASE_MODEL** and **ADAPTER_DIR** in the *translator.py* file before you run the evaluate script.
+
 ## Evaluation Results
 
-### Initial evaluation
+### Initial evaluation - Baseline
 - Exact match rate: 1.0 (data is inflated, test outputs are generated from the same dictionary)
 
+### Qwen2.5-0.5B-Instruct
+- Exact match rate: 0
 
+### Qwen2.5-3B-Instruct
+- Exact match rate: 0
+
+### Llama-3.2-3B-Instruct
+- Exact match rate: 0

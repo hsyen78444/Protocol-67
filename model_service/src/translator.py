@@ -128,5 +128,5 @@ def translate_text(text: str) -> dict:
         "detected_slang_terms": detected_slang,
         "unknown_terms": unknown_terms,
         "sentiment": sentiment,
-        "model_version": "qwen0.5b-lora-v1",
+        "model_version": "llama3b-lora-v1",
     }

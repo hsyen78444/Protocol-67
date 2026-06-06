@@ -40,3 +40,60 @@ Suggested tables:
 - `model_runs`: stores model version metadata.
 
 See `docs/database_schema.md` for field-level schema guidance.
+
+## Clear cache from old imports and database file that retains old schema:
+```powershell
+# Delete all __pycache__ folders recursively
+Get-ChildItem -Path . -Include '__pycache__' -Recurse -Force | Remove-Item -Recurse -Force
+
+# Delete the database file
+Remove-Item -Path protocol67.db -Force -ErrorAction SilentlyContinue
+
+# Delete any .pyc files
+Get-ChildItem -Path . -Filter '*.pyc' -Recurse -Force | Remove-Item -Force
+
+Write-Host "Cache cleared. Restart the server now." -ForegroundColor Green
+```
+
+## Test Each Endpoint After Fix
+```powershell
+# 1. Test health (should work)
+Invoke-RestMethod -Uri http://localhost:8000/health
+
+# 2. Test stats (should return zeros, not error)
+Invoke-RestMethod -Uri http://localhost:8000/stats
+
+# 3. Test translate with database persistence
+$body = @{text = "bro is cooked fr"} | ConvertTo-Json
+Invoke-RestMethod -Uri http://localhost:8000/translate `
+                  -Method POST `
+                  -Body $body `
+                  -ContentType "application/json"
+
+# 4. Test stats again (should show 1 translation)
+Invoke-RestMethod -Uri http://localhost:8000/stats
+
+# 5. Test unknown-terms (should return empty list, not error)
+Invoke-RestMethod -Uri "http://localhost:8000/unknown-terms?page=0&limit=10"
+
+# 6. Test feedback after you have a translation_id
+$feedback = @{
+    translation_id = 1
+    input_text = "bro is cooked fr"
+    original_translation = "bro is cooked fr"
+    corrected_translation = "brother is in serious trouble for real"
+    notes = "cooked means in trouble, fr means for real"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri http://localhost:8000/feedback `
+                  -Method POST `
+                  -Body $feedback `
+                  -ContentType "application/json"
+
+# Resolve a term (assuming you have term_id=1)
+$resolve = @{proposed_meaning = "in trouble"} | ConvertTo-Json
+Invoke-RestMethod -Uri http://localhost:8000/unknown-terms/1/resolve `
+                  -Method POST `
+                  -Body $resolve `
+                  -ContentType "application/json"
+```

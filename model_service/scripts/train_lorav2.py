@@ -8,7 +8,7 @@ BASE_MODEL = "meta-llama/Llama-3.2-3B-Instruct"
 TRAIN_FILE = "data_pipeline/data/processed/train.jsonl"
 VAL_FILE = "data_pipeline/data/processed/validation.jsonl"
 OUTPUT_DIR = "model_service/outputs/llama3b-slang-lora"
-MAX_SEQ_LEN = 256
+MAX_SEQ_LEN = 128
 
 # def lora_quantization():
 #     bnb_config = BitsAndBytesConfig(
@@ -27,17 +27,17 @@ def load_model():
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.float16,
+        bnb_4bit_compute_dtype=torch.float32,
         bnb_4bit_use_double_quant=True,
     )
 
     model = AutoModelForCausalLM.from_pretrained(
         BASE_MODEL,
         quantization_config=bnb_config,
-        device_map=None,
+        device_map="auto",
         trust_remote_code=True,
         dtype=torch.float16
-    ).to("cuda")
+    )
     # model.enable_input_require_grads()
     model = prepare_model_for_kbit_training(model)
     model.config.use_cache = False
@@ -62,22 +62,22 @@ def format_prompt(example, tokenizer):
         {
             "role": "system",
             "content": (
-                "You are a translator that converts internet slang and brainrot text "
-                "into clear, formal English. You will be given the sentiment of the "
-                "input and the slang terms present to help guide your translation."
+                "You are an expert linguistics assistant. Your task is to analyze internet "
+                "slang and brainrot text, identify its sentiment, extract the slang terms "
+                "present, and provide a clear, formal English translation."
             )
         },
         {
             "role": "user",
-            "content": (
-                f"Sentiment: {sentiment}\n"
-                f"Slang terms: {slang_str}\n"
-                f"Translate: {example['input']}"
-            )
+            "content": f"Analyze and translate this text: {example['input']}"
         },
         {
             "role": "assistant",
-            "content": example["output"]
+            "content": (
+                f"Sentiment: {sentiment}\n"
+                f"Slang terms: {slang_str}\n"
+                f"Translation: {example['output']}"
+            )
         }
     ]
     return {"text": tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)}
@@ -87,7 +87,7 @@ def build_trainer(model, tokenizer, dataset):
     lora_config = LoraConfig(
         r=8,
         lora_alpha=16,
-        target_modules=["q_proj", "v_proj", "k_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+        target_modules=["q_proj", "v_proj", "k_proj", "o_proj"],
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
@@ -95,7 +95,7 @@ def build_trainer(model, tokenizer, dataset):
 
     sftconfig = SFTConfig(
         output_dir=OUTPUT_DIR,
-        num_train_epochs=7,
+        num_train_epochs=2,
         per_device_train_batch_size=1,
         gradient_accumulation_steps=8,
         warmup_steps=10,
@@ -105,14 +105,17 @@ def build_trainer(model, tokenizer, dataset):
         bf16=False,
         optim="paged_adamw_8bit",
         logging_steps=5,
-        eval_strategy="epoch",
-        save_strategy="epoch",
+        eval_strategy="steps",
+        eval_steps=100,
+        save_strategy="steps",
+        save_steps=100,
         load_best_model_at_end=True,
         report_to="none",
         max_length=MAX_SEQ_LEN,
         dataset_text_field="text",
         gradient_checkpointing=True,
-        gradient_checkpointing_kwargs={"use_reentrant": False}
+        gradient_checkpointing_kwargs={"use_reentrant": False},
+        packing=True
     )
 
     return SFTTrainer(

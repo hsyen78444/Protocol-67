@@ -40,3 +40,5 @@ backend/*.sqlite3
 data_pipeline/*.parquet
 data_pipeline/data/raw/*.tmp
 data_pipeline/data/raw/*.bak
+DANE_Documentation.md
+Python Project.md

@@ -13,6 +13,7 @@ class TranslateResponse(BaseModel):
     detected_slang_terms: list[str]
     unknown_terms: list[str]
     model_version: str
+    translation_id: int
 
 
 class FeedbackRequest(BaseModel):
@@ -21,3 +22,8 @@ class FeedbackRequest(BaseModel):
     original_translation: str
     corrected_translation: str
     notes: str | None = None
+
+
+class ResolveTermRequest(BaseModel):
+    proposed_meaning: str
+    resolved_by: str | None = None

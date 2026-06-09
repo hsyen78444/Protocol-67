@@ -341,3 +341,6 @@ Do not commit:
 - Large generated artifacts unless the team explicitly agrees.
 
 Ignored examples include `venv/`, `.venv/`, `models/`, `model_service/outputs/`, `*.safetensors`, `*.bin`, `backend/*.db`, and `data_pipeline/*.parquet`.
+
+## Project Structure 
+refers @Project Structure.md

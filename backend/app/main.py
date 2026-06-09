@@ -1,4 +1,6 @@
 import contextlib
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends, HTTPException, Query
@@ -25,14 +27,18 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Protocol 67 API", version="0.1.0", lifespan=lifespan)
 
+frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
+allowed_origins = {
+    frontend_origin,
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+}
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=sorted(allowed_origins),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

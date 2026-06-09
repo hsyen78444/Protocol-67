@@ -1,0 +1,20 @@
+{
+  "raw_rows": 6671,
+  "accepted_rows": 5144,
+  "review_duplicate_clean_text": 380,
+  "review_missing_slang": 1045,
+  "review_short_text": 102,
+  "review_rows": 1527,
+  "unique_accepted_clean_text": 5144,
+  "sentiment_counts": {
+    "positive": 3255,
+    "neutral": 1774,
+    "negative": 83,
+    "mixed": 32
+  },
+  "backup_dir": "D:\\Protocol 67\\data_pipeline\\data\\processed\\backup_before_new_raw_20260609_160924",
+  "train_rows": 4115,
+  "validation_rows": 514,
+  "test_rows": 515,
+  "random_seed": 42
+}

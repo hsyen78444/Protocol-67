@@ -1,0 +1,108 @@
+id,raw_text,clean_text,detected_slang_terms,formal_translation,sentiment,confidence_label,source,platform,unknown_terms,quality_flags,training_ready
+1,that exam was harder than expected fr,that exam was harder than expected fr,fr,That exam was truly harder than expected.,neutral,high,manual_annotation,manual,expected,clean,True
+2,the new dashboard looks clean ngl,the new dashboard looks clean ngl,clean|ngl,"The new dashboard looks polished, honestly.",positive,high,manual_annotation,manual,,clean,True
+3,idk why the upload failed again,idk why the upload failed again,idk,I do not know why the upload failed again.,neutral,high,manual_annotation,manual,failed,clean,True
+4,imo the second design is easier to read,imo the second design is easier to read,imo,"In my opinion, the second design is easier to read.",neutral,high,manual_annotation,manual,,clean,True
+5,the server is not responding rn,the server is not responding rn,rn,The server is not responding right now.,neutral,high,manual_annotation,manual,responding,clean,True
+6,the movie was mid after all that hype,the movie was mid after all that hype,mid,The movie was disappointing after all that hype.,negative,high,manual_annotation,manual,,clean,True
+7,our team is cooked if the database crashes,our team is cooked if the database crashes,cooked,Our team is in serious trouble if the database crashes.,negative,high,manual_annotation,manual,,clean,True
+8,that singer ate during the final chorus,that singer ate during the final chorus,ate,That singer performed extremely well during the final chorus.,positive,high,manual_annotation,manual,,clean,True
+9,she will slay the presentation tomorrow,she will slay the presentation tomorrow,slay,She will do an excellent job on the presentation tomorrow.,positive,high,manual_annotation,manual,,clean,True
+10,he has calm rizz when he talks,he has calm rizz when he talks,rizz,He has natural charisma when he talks.,positive,high,manual_annotation,manual,,clean,True
+11,that excuse is cap and nobody believes it,that excuse is cap and nobody believes it,cap,That excuse is a lie and nobody believes it.,negative,high,manual_annotation,manual,,clean,True
+12,this soup is amazing no cap,this soup is amazing no cap,no cap,This soup is genuinely amazing.,positive,high,manual_annotation,manual,amazing,clean,True
+13,his post got ratioed after the reply,his post got ratioed after the reply,ratioed,His post received more disagreement after the reply.,negative,high,manual_annotation,manual,,clean,True
+14,finishing the project early was a w,finishing the project early was a w,w,Finishing the project early was a success.,positive,high,manual_annotation,manual,finishing,clean,True
+15,missing the train was an l,missing the train was an l,l,Missing the train was a bad outcome.,negative,high,manual_annotation,manual,missing,clean,True
+16,chat is tweaking over the balance patch,chat is tweaking over the balance patch,tweaking,The chat is overreacting to the balance patch.,negative,high,manual_annotation,manual,,clean,True
+17,this new song slaps in the car,this new song slaps in the car,slaps,This new song sounds very good in the car.,positive,high,manual_annotation,manual,,clean,True
+18,that goalkeeper is goated under pressure,that goalkeeper is goated under pressure,goated,That goalkeeper is exceptionally good under pressure.,positive,high,manual_annotation,manual,,clean,True
+19,that link looks sus to me,that link looks sus to me,sus,That link looks suspicious to me.,negative,high,manual_annotation,manual,,clean,True
+20,the cafe has a calm vibe today,the cafe has a calm vibe today,vibe,The cafe has a calm atmosphere today.,neutral,high,manual_annotation,manual,,clean,True
+21,thinking we can finish tonight is delulu,thinking we can finish tonight is delulu,delulu,Thinking we can finish tonight is unrealistic.,negative,high,manual_annotation,manual,thinking,clean,True
+22,he called the quiet strategy sigma,he called the quiet strategy sigma,sigma,He described the quiet strategy as independent and unconventional.,neutral,high,manual_annotation,manual,,clean,True
+23,that reply felt npc and generic,that reply felt npc and generic,npc,That reply felt generic and unoriginal.,negative,high,manual_annotation,manual,,clean,True
+24,she had main character energy at graduation,she had main character energy at graduation,main character,She seemed like the most noticeable person at graduation.,positive,high,manual_annotation,manual,,clean,True
+25,lowkey this assignment is difficult,lowkey this assignment is difficult,lowkey,This assignment is somewhat difficult.,neutral,high,manual_annotation,manual,,clean,True
+26,highkey proud of the whole team,highkey proud of the whole team,highkey,I am openly proud of the whole team.,neutral,high,manual_annotation,manual,,clean,True
+27,bet i will send the notes tonight,bet i will send the notes tonight,bet,"Okay, I will send the notes tonight.",positive,high,manual_annotation,manual,,clean,True
+28,that take is based and reasonable,that take is based and reasonable,based,That opinion is confident and reasonable.,positive,high,manual_annotation,manual,,clean,True
+29,the forced joke was cringe,the forced joke was cringe,cringe,The forced joke was embarrassing.,negative,high,manual_annotation,manual,forced,clean,True
+30,coffee after class hits different,coffee after class hits different,hits different,Coffee after class feels especially satisfying.,positive,high,manual_annotation,manual,,clean,True
+31,we are locked in for finals week,we are locked in for finals week,locked in,We are focused and ready for finals week.,positive,high,manual_annotation,manual,,clean,True
+32,my feed is pure brainrot after midnight,my feed is pure brainrot after midnight,brainrot,My feed is full of absurd internet content after midnight.,neutral,high,manual_annotation,manual,feed,clean,True
+33,the comments became skibidi chaos quickly,the comments became skibidi chaos quickly,skibidi,The comments quickly became absurd meme chaos.,neutral,high,manual_annotation,manual,,clean,True
+34,gyatt that edit is really sharp,gyatt that edit is really sharp,gyatt,"Wow, that edit is really sharp.",positive,high,manual_annotation,manual,,clean,True
+35,he called the last slice fanum tax,he called the last slice fanum tax,fanum tax,He jokingly took the last slice of food.,neutral,high,manual_annotation,manual,,clean,True
+36,that entrance had serious aura,that entrance had serious aura,aura,That entrance showed strong confidence and presence.,positive,high,manual_annotation,manual,,clean,True
+37,he was aura farming in the lobby,he was aura farming in the lobby,aura farming,He was trying to look impressive in the lobby.,neutral,high,manual_annotation,manual,,clean,True
+38,he can yap about keyboards for hours,he can yap about keyboards for hours,yap,He can talk about keyboards for hours.,negative,high,manual_annotation,manual,,clean,True
+39,chat was yapping during the cutscene,chat was yapping during the cutscene,yapping,The chat was talking too much during the cutscene.,negative,high,manual_annotation,manual,,clean,True
+40,after that thread you need to touch grass,after that thread you need to touch grass,touch grass,"After that thread, you need to take a break from the internet.",negative,high,manual_annotation,manual,,clean,True
+41,wait let him cook before judging,wait let him cook before judging,let him cook,Wait and let him continue before judging.,positive,high,manual_annotation,manual,judging,clean,True
+42,the series fell off after season two,the series fell off after season two,fell off,The series declined in quality after season two.,negative,high,manual_annotation,manual,,clean,True
+43,that concern is valid for this project,that concern is valid for this project,valid,That concern is reasonable for this project.,positive,high,manual_annotation,manual,,clean,True
+44,this lunch is bussin after practice,this lunch is bussin after practice,bussin,This lunch tastes very good after practice.,positive,high,manual_annotation,manual,,clean,True
+45,the jacket has drip with those shoes,the jacket has drip with those shoes,drip,The jacket looks stylish with those shoes.,positive,high,manual_annotation,manual,,clean,True
+46,that fit works well for the event,that fit works well for the event,fit,That outfit works well for the event.,neutral,high,manual_annotation,manual,,clean,True
+47,the rival team is the opp today,the rival team is the opp today,opp,The rival team is the opponent today.,negative,high,manual_annotation,manual,,clean,True
+48,stop glazing the streamer after one play,stop glazing the streamer after one play,glazing,Stop excessively praising the streamer after one play.,negative,high,manual_annotation,manual,,clean,True
+49,thanks pookie for saving my seat,thanks pookie for saving my seat,pookie,"Thanks, my friend, for saving my seat.",positive,high,manual_annotation,manual,saving,clean,True
+50,that comment is real after finals,that comment is real after finals,real,That comment is relatable after finals.,positive,high,manual_annotation,manual,,clean,True
+51,failing once was a canon event,failing once was a canon event,canon event,Failing once was an unavoidable formative experience.,neutral,high,manual_annotation,manual,failing,clean,True
+52,buying snacks became a side quest,buying snacks became a side quest,side quest,Buying snacks became an unexpected extra task.,neutral,high,manual_annotation,manual,buying,clean,True
+53,that trip became a core memory,that trip became a core memory,core memory,That trip became a very memorable experience.,positive,high,manual_annotation,manual,,clean,True
+54,the stream has good vibes tonight,the stream has good vibes tonight,vibes,The stream has a pleasant mood tonight.,neutral,high,manual_annotation,manual,,clean,True
+55,sleepy after class is a mood,sleepy after class is a mood,mood,Feeling sleepy after class is relatable.,neutral,high,manual_annotation,manual,,clean,True
+56,the poster design is fire,the poster design is fire,fire,The poster design is excellent.,positive,high,manual_annotation,manual,,clean,True
+57,the event was lit last night,the event was lit last night,lit,The event was exciting last night.,positive,high,manual_annotation,manual,,clean,True
+58,that transition was clean in the video,that transition was clean in the video,clean,That transition was neat and well executed in the video.,positive,high,manual_annotation,manual,,clean,True
+59,this scene is peak television,this scene is peak television,peak,This scene is excellent television.,positive,high,manual_annotation,manual,,clean,True
+60,that ending was wild to watch,that ending was wild to watch,wild,That ending was surprising to watch.,neutral,high,manual_annotation,manual,ending,clean,True
+61,bro forgot the deadline again,bro forgot the deadline again,bro,He forgot the deadline again.,neutral,high,manual_annotation,manual,,clean,True
+62,bruh the file vanished again,bruh the file vanished again,bruh,That is frustrating; the file vanished again.,negative,high,manual_annotation,manual,vanished,clean,True
+63,thanks fam for checking the report,thanks fam for checking the report,fam,"Thanks, friend, for checking the report.",positive,high,manual_annotation,manual,checking,clean,True
+64,bestie you handled that meeting well,bestie you handled that meeting well,bestie,"My friend, you handled that meeting well.",positive,high,manual_annotation,manual,handled|meeting,clean,True
+65,she is a presentation queen,she is a presentation queen,queen,She is excellent at giving presentations.,positive,high,manual_annotation,manual,,clean,True
+66,he helped everyone like a king,he helped everyone like a king,king,He helped everyone admirably.,positive,high,manual_annotation,manual,helped,clean,True
+67,i stan this study plan,i stan this study plan,stan,I strongly support this study plan.,positive,high,manual_annotation,manual,,clean,True
+68,fans ship those two characters,fans ship those two characters,ship,Fans support those two characters as a pairing.,positive,high,manual_annotation,manual,,clean,True
+69,that photo was a soft launch,that photo was a soft launch,soft launch,That photo was a subtle public hint about the relationship.,neutral,high,manual_annotation,manual,,clean,True
+70,the team did a hard launch today,the team did a hard launch today,hard launch,The team made a clear public announcement today.,neutral,high,manual_annotation,manual,,clean,True
+71,that quote lives rent free in my head,that quote lives rent free in my head,rent free,That quote constantly occupies my thoughts.,neutral,high,manual_annotation,manual,,clean,True
+72,the designer understood the assignment,the designer understood the assignment,understood the assignment,The designer met the expectations very well.,positive,high,manual_annotation,manual,,clean,True
+73,it is giving final boss energy,it is giving final boss energy,it is giving,It strongly resembles final boss energy.,neutral,high,manual_annotation,manual,,clean,True
+74,the layout is giving professional,the layout is giving professional,giving,The layout looks professional.,neutral,high,manual_annotation,manual,,clean,True
+75,say less i will join the call,say less i will join the call,say less,I understand; I will join the call.,positive,high,manual_annotation,manual,,clean,True
+76,that bug is big yikes for launch,that bug is big yikes for launch,big yikes,That bug is very concerning for launch.,negative,high,manual_annotation,manual,,clean,True
+77,yikes that was awkward,yikes that was awkward,yikes,That was awkward.,negative,high,manual_annotation,manual,,clean,True
+78,the playlist passed the vibe check,the playlist passed the vibe check,vibe check,The playlist matched the mood well.,neutral,high,manual_annotation,manual,passed,clean,True
+79,missing the jump was a skill issue,missing the jump was a skill issue,skill issue,Missing the jump was jokingly blamed on lack of skill.,negative,high,manual_annotation,manual,missing,clean,True
+80,that save was clutch at the end,that save was clutch at the end,clutch,That save was successful under pressure at the end.,positive,high,manual_annotation,manual,,clean,True
+81,the lobby had one sweat carrying everyone,the lobby had one sweat carrying everyone,sweat,The lobby had one player who was trying very hard and carrying everyone.,negative,high,manual_annotation,manual,carrying,clean,True
+82,the match had a tryhard on defense,the match had a tryhard on defense,tryhard,The match had someone making excessive effort on defense.,negative,high,manual_annotation,manual,,clean,True
+83,she had to carry the project,she had to carry the project,carry,She had to do most of the work for the project.,positive,high,manual_annotation,manual,,clean,True
+84,the team got carried by one player,the team got carried by one player,carried,The team was helped substantially by one player.,neutral,high,manual_annotation,manual,,clean,True
+85,the update nerfed the strongest weapon,the update nerfed the strongest weapon,nerfed,The update weakened the strongest weapon.,negative,high,manual_annotation,manual,,clean,True
+86,the patch buffed the support role,the patch buffed the support role,buffed,The patch strengthened the support role.,positive,high,manual_annotation,manual,,clean,True
+87,we spawn near the objective,we spawn near the objective,spawn,We appear near the objective.,neutral,high,manual_annotation,manual,,clean,True
+88,they were camping the corner again,they were camping the corner again,camping,They were staying in the corner to gain an advantage again.,negative,high,manual_annotation,manual,,clean,True
+89,i had to speedrun my homework,i had to speedrun my homework,speedrun,I had to finish my homework very quickly.,neutral,high,manual_annotation,manual,,clean,True
+90,the meetup is irl next week,the meetup is irl next week,irl,The meetup is in real life next week.,neutral,high,manual_annotation,manual,,clean,True
+91,the concert gave me fomo,the concert gave me fomo,fomo,The concert made me fear missing out.,negative,high,manual_annotation,manual,,clean,True
+92,staying home was jomo tonight,staying home was jomo tonight,jomo,Staying home brought joy from missing out tonight.,positive,high,manual_annotation,manual,staying,clean,True
+93,that shortcut is useful iykyk,that shortcut is useful iykyk,iykyk,That shortcut is useful if you understand the context.,neutral,high,manual_annotation,manual,,clean,True
+94,the prototype was vibe coded quickly,the prototype was vibe coded quickly,vibe coded,The prototype was built quickly in an intuitive experimental style.,neutral,high,manual_annotation,manual,,clean,True
+95,she handled the meeting like a girlboss,she handled the meeting like a girlboss,girlboss,She handled the meeting with confidence and ambition.,positive,high,manual_annotation,manual,handled|meeting,clean,True
+96,submitting early was a boss move,submitting early was a boss move,boss move,Submitting early was an impressive action.,positive,high,manual_annotation,manual,submitting,clean,True
+97,the singer devoured the chorus,the singer devoured the chorus,devoured,The singer performed the chorus extremely well.,positive,high,manual_annotation,manual,,clean,True
+98,he got pressed about the feedback,he got pressed about the feedback,pressed,He became annoyed about the feedback.,negative,high,manual_annotation,manual,,clean,True
+99,he was salty after the match,he was salty after the match,salty,He was resentful after the match.,negative,high,manual_annotation,manual,,clean,True
+100,the plan is chill for tomorrow,the plan is chill for tomorrow,chill,The plan is acceptable for tomorrow.,positive,high,manual_annotation,manual,,clean,True
+101,that excuse is unserious,that excuse is unserious,unserious,That excuse is not responsible.,negative,high,manual_annotation,manual,,clean,True
+102,the song is living rent free in my head,the song is living rent free in my head,living rent free,The song is constantly occupying my thoughts.,neutral,high,manual_annotation,manual,,clean,True
+103,your analysis is on point,your analysis is on point,on point,Your analysis is accurate and well executed.,positive,high,manual_annotation,manual,,clean,True
+104,that is a valid take on the movie,that is a valid take on the movie,valid take,That is a reasonable opinion about the movie.,positive,high,manual_annotation,manual,,clean,True
+105,hot take the sequel is better,hot take the sequel is better,hot take,Here is a provocative opinion: the sequel is better.,neutral,high,manual_annotation,manual,,clean,True
+106,safe take team a will probably win,safe take team a will probably win,safe take,Here is a cautious opinion: Team A will probably win.,neutral,high,manual_annotation,manual,,clean,True
+107,the reply caused a ratio online,the reply caused a ratio online,ratio,The reply received more engagement than the original post online.,negative,high,manual_annotation,manual,caused,clean,True

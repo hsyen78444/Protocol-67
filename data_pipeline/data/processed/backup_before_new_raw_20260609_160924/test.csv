@@ -1,0 +1,13 @@
+id,raw_text,clean_text,detected_slang_terms,formal_translation,sentiment,confidence_label,source,platform,unknown_terms,quality_flags,training_ready
+15,missing the train was an l,missing the train was an l,l,Missing the train was a bad outcome.,negative,high,manual_annotation,manual,missing,clean,True
+21,thinking we can finish tonight is delulu,thinking we can finish tonight is delulu,delulu,Thinking we can finish tonight is unrealistic.,negative,high,manual_annotation,manual,thinking,clean,True
+52,buying snacks became a side quest,buying snacks became a side quest,side quest,Buying snacks became an unexpected extra task.,neutral,high,manual_annotation,manual,buying,clean,True
+61,bro forgot the deadline again,bro forgot the deadline again,bro,He forgot the deadline again.,neutral,high,manual_annotation,manual,,clean,True
+72,the designer understood the assignment,the designer understood the assignment,understood the assignment,The designer met the expectations very well.,positive,high,manual_annotation,manual,,clean,True
+75,say less i will join the call,say less i will join the call,say less,I understand; I will join the call.,positive,high,manual_annotation,manual,,clean,True
+83,she had to carry the project,she had to carry the project,carry,She had to do most of the work for the project.,positive,high,manual_annotation,manual,,clean,True
+87,we spawn near the objective,we spawn near the objective,spawn,We appear near the objective.,neutral,high,manual_annotation,manual,,clean,True
+88,they were camping the corner again,they were camping the corner again,camping,They were staying in the corner to gain an advantage again.,negative,high,manual_annotation,manual,,clean,True
+93,that shortcut is useful iykyk,that shortcut is useful iykyk,iykyk,That shortcut is useful if you understand the context.,neutral,high,manual_annotation,manual,,clean,True
+98,he got pressed about the feedback,he got pressed about the feedback,pressed,He became annoyed about the feedback.,negative,high,manual_annotation,manual,,clean,True
+103,your analysis is on point,your analysis is on point,on point,Your analysis is accurate and well executed.,positive,high,manual_annotation,manual,,clean,True

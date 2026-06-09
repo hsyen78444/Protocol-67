@@ -1,0 +1,11 @@
+id,raw_text,clean_text,detected_slang_terms,formal_translation,sentiment,confidence_label,source,platform,unknown_terms,quality_flags,training_ready
+2,the new dashboard looks clean ngl,the new dashboard looks clean ngl,clean|ngl,"The new dashboard looks polished, honestly.",positive,high,manual_annotation,manual,,clean,True
+3,idk why the upload failed again,idk why the upload failed again,idk,I do not know why the upload failed again.,neutral,high,manual_annotation,manual,failed,clean,True
+22,he called the quiet strategy sigma,he called the quiet strategy sigma,sigma,He described the quiet strategy as independent and unconventional.,neutral,high,manual_annotation,manual,,clean,True
+24,she had main character energy at graduation,she had main character energy at graduation,main character,She seemed like the most noticeable person at graduation.,positive,high,manual_annotation,manual,,clean,True
+30,coffee after class hits different,coffee after class hits different,hits different,Coffee after class feels especially satisfying.,positive,high,manual_annotation,manual,,clean,True
+38,he can yap about keyboards for hours,he can yap about keyboards for hours,yap,He can talk about keyboards for hours.,negative,high,manual_annotation,manual,,clean,True
+53,that trip became a core memory,that trip became a core memory,core memory,That trip became a very memorable experience.,positive,high,manual_annotation,manual,,clean,True
+64,bestie you handled that meeting well,bestie you handled that meeting well,bestie,"My friend, you handled that meeting well.",positive,high,manual_annotation,manual,handled|meeting,clean,True
+91,the concert gave me fomo,the concert gave me fomo,fomo,The concert made me fear missing out.,negative,high,manual_annotation,manual,,clean,True
+96,submitting early was a boss move,submitting early was a boss move,boss move,Submitting early was an impressive action.,positive,high,manual_annotation,manual,submitting,clean,True

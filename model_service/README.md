@@ -56,6 +56,16 @@ Do not commit model weights or adapters.
 
 4. Use **python -m model_service.scripts.evaluate** to evaluate the model's exact match rate. Make sure to change the **BASE_MODEL** and **ADAPTER_DIR** in the *translator.py* file before you run the evaluate script. The **ADAPTER_DIR** can be found in the *outputs* folder under this model_service folder. The folder should appear only after you run the model training script.
 
+## Colab Training Notebook
+
+If local GPU training is not available, use the documented Colab notebook:
+
+```text
+model_service/notebooks/P67-Train.ipynb
+```
+
+The notebook clones the repo, installs model dependencies, authenticates with Hugging Face, verifies the processed dataset, runs `train_lorav2.py`, and saves the trained LoRA adapter to Google Drive.
+
 ## Evaluation Results
 
 ### Initial evaluation - Baseline

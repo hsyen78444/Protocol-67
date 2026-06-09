@@ -6,9 +6,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DICTIONARY_PATH = ROOT / "data_pipeline" / "config" / "slang_dictionary.json"
 
+_DICTIONARY: dict | None = None
 
 def load_dictionary() -> dict:
-    return json.loads(DICTIONARY_PATH.read_text(encoding="utf-8"))
+    global _DICTIONARY
+    if _DICTIONARY is None:
+        _DICTIONARY = json.loads(DICTIONARY_PATH.read_text(encoding="utf-8"))
+    return _DICTIONARY
 
 
 def detect_terms(text: str, dictionary: dict) -> list[str]:

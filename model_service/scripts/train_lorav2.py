@@ -1,13 +1,13 @@
 import torch
 from datasets import load_dataset
-from transformers import AutoTokenizer, AutoModelForCausalLM, EarlyStoppingCallback
-from peft import LoraConfig
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, EarlyStoppingCallback
+from peft import LoraConfig, prepare_model_for_kbit_training
 from trl import SFTTrainer, SFTConfig
 
-BASE_MODEL = "Qwen/Qwen2.5-3B-Instruct"
+BASE_MODEL = "meta-llama/Llama-3.2-3B-Instruct"
 TRAIN_FILE = "data_pipeline/data/processed/train.jsonl"
 VAL_FILE = "data_pipeline/data/processed/validation.jsonl"
-OUTPUT_DIR = "model_service/outputs/qwen3b-slang-lora"
+OUTPUT_DIR = "model_service/outputs/llama3b-slang-lora"
 MAX_SEQ_LEN = 256
 
 # def lora_quantization():
@@ -21,16 +21,26 @@ MAX_SEQ_LEN = 256
 
 def load_tokenizer():
     tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
-    tokenizer.pad_token = tokenizer.eos_token
     return tokenizer
 
 def load_model():
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.float16,
+        bnb_4bit_use_double_quant=True,
+    )
+
     model = AutoModelForCausalLM.from_pretrained(
         BASE_MODEL,
+        quantization_config=bnb_config,
         device_map=None,
         trust_remote_code=True,
+        dtype=torch.float16
     ).to("cuda")
-    model.enable_input_require_grads()
+    # model.enable_input_require_grads()
+    model = prepare_model_for_kbit_training(model)
+    model.config.use_cache = False
     return model
 
 def prep_dataset(tokenizer):
@@ -77,7 +87,7 @@ def build_trainer(model, tokenizer, dataset):
     lora_config = LoraConfig(
         r=8,
         lora_alpha=16,
-        target_modules=["q_proj", "v_proj", "k_proj", "o_proj"],
+        target_modules=["q_proj", "v_proj", "k_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
@@ -85,13 +95,15 @@ def build_trainer(model, tokenizer, dataset):
 
     sftconfig = SFTConfig(
         output_dir=OUTPUT_DIR,
-        num_train_epochs=6,
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=4,
-        warmup_ratio=0.1,
-        learning_rate=1.5e-4,
+        num_train_epochs=7,
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=8,
+        warmup_steps=10,
+        learning_rate=2e-4,
         lr_scheduler_type="cosine",
-        fp16=True,
+        fp16=False,
+        bf16=False,
+        optim="paged_adamw_8bit",
         logging_steps=5,
         eval_strategy="epoch",
         save_strategy="epoch",

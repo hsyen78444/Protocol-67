@@ -6,3 +6,4 @@ datasets
 peft
 accelerate
 evaluate
+trl

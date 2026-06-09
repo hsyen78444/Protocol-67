@@ -133,6 +133,19 @@ class DatabaseService:
         term.resolved_by = "system"  # Or set this to the actual user who resolved it
         self.db.commit()
         return True
+
+    def ignore_unknown_term(self, term_id: int) -> bool:
+        """Mark unknown term as ignored."""
+        term = self.db.query(models.UnknownTerm).filter(
+            models.UnknownTerm.id == term_id
+        ).first()
+
+        if not term:
+            return False
+
+        term.status = "ignored"
+        self.db.commit()
+        return True
     
     def get_stats(self) -> dict:
         """Get aggregated statistics from all tables"""

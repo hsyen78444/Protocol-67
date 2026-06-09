@@ -15,6 +15,7 @@ export interface TranslationResult {
   model_version: string;
   tokens: number;
   latency_ms: number;
+  translation_id?: number;
 }
 
 export interface QueueRow {

@@ -27,7 +27,12 @@ app = FastAPI(title="Protocol 67 API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -143,7 +148,7 @@ def list_unknown_terms(
 
 @app.post("/unknown-terms/{term_id}/resolve")
 def resolve_unknown_term(term_id: int, request: ResolveTermRequest, db: Session = Depends(get_db)) -> dict:
-    proposed_meaning = request.proposed_meaning  # ✅ CORRECT - access as attribute
+    proposed_meaning = request.proposed_meaning
     if not proposed_meaning:
         raise HTTPException(status_code=400, detail="proposed_meaning is required")
     
@@ -154,6 +159,17 @@ def resolve_unknown_term(term_id: int, request: ResolveTermRequest, db: Session 
         raise HTTPException(status_code=404, detail="Term not found")
     
     return {"status": "resolved", "term_id": term_id}
+
+
+@app.post("/unknown-terms/{term_id}/ignore")
+def ignore_unknown_term(term_id: int, db: Session = Depends(get_db)) -> dict:
+    db_service = DatabaseService(db)
+    success = db_service.ignore_unknown_term(term_id)
+
+    if not success:
+        raise HTTPException(status_code=404, detail="Term not found")
+
+    return {"status": "ignored", "term_id": term_id}
 
 
 @app.get("/stats")

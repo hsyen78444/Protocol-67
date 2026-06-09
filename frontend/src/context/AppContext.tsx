@@ -2,17 +2,23 @@
 
 import {
   createContext,
-  useContext,
-  useState,
   useCallback,
-  useRef,
+  useContext,
   useEffect,
+  useRef,
+  useState,
   type ReactNode,
 } from "react";
-import { p67SeedQueue, P67_EMERGING } from "@/lib/engine";
+import {
+  fetchStats,
+  fetchUnknownTerms,
+  ignoreUnknownTerm,
+  resolveUnknownTerm,
+  submitTranslationFeedback,
+} from "@/lib/api";
 import type {
-  Stats,
   QueueRow,
+  Stats,
   Toast,
   ToastKind,
   TranslationResult,
@@ -44,16 +50,16 @@ const AppContext = createContext<AppState | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [stats, setStats] = useState<Stats>({
-    translations: 128,
-    resolved: 41,
-    feedback: 17,
+    translations: 0,
+    resolved: 0,
+    feedback: 0,
   });
-  const [queue, setQueue] = useState<QueueRow[]>(() => p67SeedQueue());
+  const [queue, setQueue] = useState<QueueRow[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [feedbackFor, setFeedbackFor] = useState<TranslationResult | null>(
     null,
   );
-  const [currentInput, setCurrentInput] = useState<string>("");
+  const [currentInput, setCurrentInput] = useState("");
   const [currentTranslation, setCurrentTranslation] =
     useState<TranslationResult | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -61,40 +67,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const savedInputRef = useRef<string | null>(null);
   const savedTranslationRef = useRef<string | null>(null);
 
-  // Persist translator state to localStorage so it survives navigation/reloads
   useEffect(() => {
     try {
       const savedIn = localStorage.getItem("p67_currentInput");
       const savedRes = localStorage.getItem("p67_currentTranslation");
+
       if (savedIn) {
         savedInputRef.current = savedIn;
         setCurrentInput(savedIn);
-        console.debug(
-          "AppProvider: loaded currentInput from localStorage",
-          savedIn,
-        );
       }
+
       if (savedRes) {
         try {
-          const parsed = JSON.parse(savedRes);
           savedTranslationRef.current = savedRes;
-          setCurrentTranslation(parsed);
-          console.debug(
-            "AppProvider: loaded currentTranslation from localStorage",
-            parsed,
-          );
-        } catch (e) {
-          console.debug(
-            "AppProvider: failed to parse saved currentTranslation",
-            e,
-          );
+          setCurrentTranslation(JSON.parse(savedRes));
+        } catch {
+          localStorage.removeItem("p67_currentTranslation");
         }
       }
-    } catch (e) {
-      // ignore
+    } catch {
+      // Local storage is optional for the app to function.
     }
+
     setHydrated(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -102,8 +97,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (savedInputRef.current === currentInput) return;
       localStorage.setItem("p67_currentInput", currentInput);
       savedInputRef.current = currentInput;
-      console.debug("AppProvider: saved currentInput", currentInput);
-    } catch (e) {}
+    } catch {}
   }, [currentInput]);
 
   useEffect(() => {
@@ -112,23 +106,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ? JSON.stringify(currentTranslation)
         : null;
       if (savedTranslationRef.current === serialized) return;
-      if (serialized)
-        localStorage.setItem("p67_currentTranslation", serialized);
-      else localStorage.removeItem("p67_currentTranslation");
-      savedTranslationRef.current = serialized;
-      console.debug(
-        "AppProvider: saved currentTranslation",
-        currentTranslation,
-      );
-    } catch (e) {}
-  }, [currentTranslation]);
 
-  useEffect(() => {
-    console.debug("AppProvider: current state change", {
-      currentInput,
-      currentTranslation,
-    });
-  }, [currentInput, currentTranslation]);
+      if (serialized) {
+        localStorage.setItem("p67_currentTranslation", serialized);
+      } else {
+        localStorage.removeItem("p67_currentTranslation");
+      }
+
+      savedTranslationRef.current = serialized;
+    } catch {}
+  }, [currentTranslation]);
 
   const toast = useCallback((msg: string, kind: ToastKind = "ok") => {
     const id = ++toastId.current;
@@ -141,54 +128,55 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2950);
   }, []);
 
-  const ingestUnknowns = useCallback((res: TranslationResult): number => {
-    if (!res.unknown_terms.length) return 0;
-    let added = 0;
-    setQueue((q) => {
-      const known = new Set(q.map((r) => r.term.toLowerCase()));
-      const fresh: QueueRow[] = [];
-      res.unknown_terms.forEach((term) => {
-        if (!known.has(term.toLowerCase())) {
-          const meta = P67_EMERGING[term] || {
-            proposed: "",
-            example: res.input,
-          };
-          fresh.push({
-            id: "u-" + term + "-" + Date.now(),
-            term,
-            example: res.input,
-            proposed: meta.proposed || "(needs a proposed meaning)",
-            status: "pending",
-            occurrences: 1,
-            first_seen: "just now",
-            isNew: true,
-          });
-          added++;
-        }
-      });
-      const bumped = q.map((r) =>
-        res.unknown_terms.some(
-          (t) => t.toLowerCase() === r.term.toLowerCase(),
-        ) && r.status === "pending"
-          ? { ...r, occurrences: r.occurrences + 1 }
-          : r,
-      );
-      return [...fresh, ...bumped];
-    });
-    return added;
-  }, []);
+  const refreshBackendState = useCallback(async () => {
+    try {
+      const [nextStats, nextQueue] = await Promise.all([
+        fetchStats(),
+        fetchUnknownTerms(),
+      ]);
+      setStats(nextStats);
+      setQueue(nextQueue);
+    } catch {
+      toast("Backend unavailable - start FastAPI on port 8000", "info");
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    if (hydrated) void refreshBackendState();
+  }, [hydrated, refreshBackendState]);
+
+  const ingestUnknowns = useCallback(
+    (res: TranslationResult): number => {
+      if (!res.unknown_terms.length) return 0;
+      void refreshBackendState();
+      return res.unknown_terms.length;
+    },
+    [refreshBackendState],
+  );
 
   const bumpTranslations = useCallback(() => {
     setStats((s) => ({ ...s, translations: s.translations + 1 }));
-  }, []);
+    void refreshBackendState();
+  }, [refreshBackendState]);
 
   const submitFeedback = useCallback(
-    (_data: { corrected: string; notes: string }) => {
-      setStats((s) => ({ ...s, feedback: s.feedback + 1 }));
-      setFeedbackFor(null);
-      toast("Feedback logged — thanks for improving the model");
+    async (data: { corrected: string; notes: string }) => {
+      if (!feedbackFor) return;
+
+      try {
+        await submitTranslationFeedback({
+          result: feedbackFor,
+          corrected: data.corrected,
+          notes: data.notes,
+        });
+        setFeedbackFor(null);
+        await refreshBackendState();
+        toast("Feedback logged - thanks for improving the model");
+      } catch {
+        toast("Could not submit feedback to the backend", "info");
+      }
     },
-    [toast],
+    [feedbackFor, refreshBackendState, toast],
   );
 
   const openFeedback = useCallback(
@@ -198,24 +186,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const closeFeedback = useCallback(() => setFeedbackFor(null), []);
 
   const resolveTerm = useCallback(
-    (id: string) => {
-      setQueue((q) =>
-        q.map((r) => (r.id === id ? { ...r, status: "resolved" } : r)),
-      );
-      setStats((s) => ({ ...s, resolved: s.resolved + 1 }));
-      toast("Term added to lexicon — model will retrain");
+    async (id: string) => {
+      const row = queue.find((item) => item.id === id);
+      if (!row?.proposed.trim()) {
+        toast("Add a proposed meaning before resolving", "info");
+        return;
+      }
+
+      try {
+        await resolveUnknownTerm(id, row.proposed.trim());
+        await refreshBackendState();
+        toast("Term added to lexicon - model will retrain");
+      } catch {
+        toast("Could not resolve term in the backend", "info");
+      }
     },
-    [toast],
+    [queue, refreshBackendState, toast],
   );
 
   const ignoreTerm = useCallback(
-    (id: string) => {
-      setQueue((q) =>
-        q.map((r) => (r.id === id ? { ...r, status: "ignored" } : r)),
-      );
-      toast("Term ignored", "info");
+    async (id: string) => {
+      try {
+        await ignoreUnknownTerm(id);
+        await refreshBackendState();
+        toast("Term ignored", "info");
+      } catch {
+        toast("Could not ignore term in the backend", "info");
+      }
     },
-    [toast],
+    [refreshBackendState, toast],
   );
 
   const editProposed = useCallback((id: string, val: string) => {
@@ -232,7 +231,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toasts,
         feedbackFor,
         pendingCount,
-        hydrated,
         hydrated,
         currentInput,
         currentTranslation,

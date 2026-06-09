@@ -1,4 +1,15 @@
+import sys
+from pathlib import Path
+
 from pydantic import BaseModel
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+MODEL_SERVICE_SRC = PROJECT_ROOT / "model_service" / "src"
+if str(MODEL_SERVICE_SRC) not in sys.path:
+    sys.path.append(str(MODEL_SERVICE_SRC))
+
+from baseline_translator import translate_with_dictionary
 
 
 class TranslationResult(BaseModel):
@@ -10,15 +21,5 @@ class TranslationResult(BaseModel):
 
 
 def translate_text(text: str) -> TranslationResult:
-    """Temporary backend adapter.
-
-    Replace this with an import from `model_service` once Member 2 finishes the
-    baseline/fine-tuned translator contract.
-    """
-    return TranslationResult(
-        formal_translation=text,
-        confidence=0.1,
-        detected_slang_terms=[],
-        unknown_terms=[],
-        model_version="placeholder-backend-v0",
-    )
+    result = translate_with_dictionary(text)
+    return TranslationResult(**result)

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Ico } from "./Icons";
 import { CountUp } from "./CountUp";
 import { useApp } from "@/context/AppContext";
-import { p67Translate, P67_EXAMPLES } from "@/lib/engine";
+import { translateText } from "@/lib/api";
+import { P67_EXAMPLES } from "@/lib/engine";
 import type { TranslationResult } from "@/lib/types";
 
 type Status = "empty" | "loading" | "result" | "error";
@@ -236,7 +237,6 @@ export function Translator() {
   const [stepIdx, setStepIdx] = useState(0);
   const [copied, setCopied] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (status !== "loading") {
@@ -252,26 +252,25 @@ export function Translator() {
     return () => clearInterval(iv);
   }, [status]);
 
-  const runTranslate = useCallback(() => {
+  const runTranslate = useCallback(async () => {
     if (!input.trim() || status === "loading") return;
     setStatus("loading");
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      try {
-        const res = p67Translate(input);
-        setResult(res);
-        setStatus("result");
-        bumpTranslations();
-        const added = ingestUnknowns(res);
-        if (added > 0)
-          toast(
-            `${added} unknown term${added > 1 ? "s" : ""} sent to review queue`,
-            "info",
-          );
-      } catch {
-        setStatus("error");
+    try {
+      const res = await translateText(input);
+      setResult(res);
+      setStatus("result");
+      bumpTranslations();
+      const added = ingestUnknowns(res);
+      if (added > 0) {
+        toast(
+          `${added} unknown term${added > 1 ? "s" : ""} sent to review queue`,
+          "info",
+        );
       }
-    }, 1080);
+    } catch {
+      setStatus("error");
+      toast("Translation request failed", "info");
+    }
   }, [input, status, bumpTranslations, ingestUnknowns, toast]);
 
   const onKey = (e: React.KeyboardEvent) => {

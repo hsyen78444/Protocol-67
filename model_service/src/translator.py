@@ -2,6 +2,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 import os
+import re
 
 BASE_MODEL  = "meta-llama/Llama-3.2-3B-Instruct"
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -49,8 +50,13 @@ def _detect_metadata(text: str) -> tuple[list[str], str]:
     """Returns (detected_slang_terms, sentiment)."""
     lowered = text.lower()
 
-    # Sort by length descending so multi-word terms match first
-    detected = [s for s in sorted(SLANG_TERMS, key=len, reverse=True) if s in lowered]
+    # Match complete slang terms only, so "ate" is not detected inside "update"
+    # and "w" is not detected inside "new".
+    detected = []
+    for slang in sorted(SLANG_TERMS, key=len, reverse=True):
+        escaped = re.escape(slang).replace(r"\ ", r"\s+")
+        if re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])", lowered):
+            detected.append(slang)
 
     if any(s in _POSITIVE for s in detected):
         sentiment = "positive"

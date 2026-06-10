@@ -16,13 +16,15 @@ Build an end-to-end web application with:
 
 - A fine-tuned or baseline slang-to-English translation model.
 - A FastAPI backend.
-- A database-backed active learning loop.
+- Database-backed translation logs, feedback, and unknown-term review.
 - A React JS frontend.
 - Bonus-only optional integrations such as a Chrome extension or messaging helper.
 
+Active learning is not implemented in the current version. Feedback and unknown-term data are stored for review and future model improvement, but they do not automatically retrain or update the model.
+
 ## Current Data Pipeline
 
-The `data_pipeline/` folder prepares the dataset for training and active learning.
+The `data_pipeline/` folder prepares the dataset for training, review, and dictionary improvement.
 
 Important outputs:
 
@@ -32,7 +34,7 @@ Important outputs:
 - `data_pipeline/data/processed/train.jsonl`
 - `data_pipeline/data/processed/validation.jsonl`
 - `data_pipeline/data/processed/test.jsonl`
-- `data_pipeline/data/interim/active_learning_candidates.csv`
+- `data_pipeline/data/interim/active_learning_candidates.csv` legacy review-candidate output
 - `data_pipeline/data/interim/unknown_term_summary.csv`
 
 The recommended model input column is `clean_text`. The recommended target column is `formal_translation`.
@@ -50,8 +52,8 @@ FastAPI Backend
     |
     |-- Sentiment + Confidence API
     |
-    |-- Active Learning API
-    |     `-- feedback + unknown terms
+    |-- Feedback + Review API
+    |     `-- feedback + unknown terms for manual review
     |
     `-- SQLite Database
           |-- translations
@@ -169,7 +171,7 @@ Deliverables:
 - API README or Swagger screenshots.
 - Integration with Member 2 translator.
 
-### Member 4: Backend B, Database and Active Learning
+### Member 4: Backend B, Database and Review Flow
 
 Main responsibility: make the system remember feedback and unknown slang.
 
@@ -188,7 +190,7 @@ Tasks:
 - Store translation logs.
 - Store unknown terms from model/API responses.
 - Store user corrections from frontend feedback.
-- Add review/update endpoints for active learning.
+- Add review/update endpoints for unknown terms.
 
 Recommended database tables:
 
@@ -232,7 +234,7 @@ model_runs
 - created_at
 ```
 
-Active learning endpoints:
+Review endpoints:
 
 ```text
 POST /feedback
@@ -312,7 +314,7 @@ Other bonus options:
 3. Member 4 creates database models and feedback storage.
 4. Member 5 builds React against the API contract.
 5. Member 2 improves model quality with fine-tuning.
-6. Backend members connect active learning to unknown terms and feedback.
+6. Backend members connect unknown-term review and feedback persistence.
 7. Team prepares final demo.
 8. Bonus integrations only if the main app is stable.
 

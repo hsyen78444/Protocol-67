@@ -3,7 +3,7 @@ from pathlib import Path
 import torch
 
 
-from model_service.src.translator import translate_text
+from model_service.src.translator import translate
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,7 +18,7 @@ def main() -> None:
     total = 0
     for line in TEST_FILE.read_text(encoding="utf-8").splitlines():
         record = json.loads(line)
-        prediction = translate_text(record["input"])["formal_translation"]
+        prediction = translate(record["input"])["formal_translation"]
         if prediction.strip().lower() == record["output"].strip().lower():
             exact += 1
         total += 1

@@ -9,7 +9,7 @@ MODEL_SERVICE_SRC = PROJECT_ROOT / "model_service" / "src"
 if str(MODEL_SERVICE_SRC) not in sys.path:
     sys.path.append(str(MODEL_SERVICE_SRC))
 
-from baseline_translator import translate_with_dictionary
+from translator import translate
 
 
 class TranslationResult(BaseModel):
@@ -21,5 +21,5 @@ class TranslationResult(BaseModel):
 
 
 def translate_text(text: str) -> TranslationResult:
-    result = translate_with_dictionary(text)
+    result = translate(text)
     return TranslationResult(**result)

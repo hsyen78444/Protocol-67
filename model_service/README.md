@@ -56,6 +56,75 @@ Do not commit model weights or adapters.
 
 4. Use **python -m model_service.scripts.evaluate** to evaluate the model's exact match rate. Make sure to change the **BASE_MODEL** and **ADAPTER_DIR** in the *translator.py* file before you run the evaluate script. The **ADAPTER_DIR** can be found in the *outputs* folder under this model_service folder. The folder should appear only after you run the model training script.
 
+## Colab Notebooks
+
+The Colab notebooks are in:
+
+```text
+model_service/notebooks/
+```
+
+Use Colab when the trained model is too large to train or serve locally.
+
+### Train The LoRA Adapter
+
+Open this notebook in Google Colab:
+
+```text
+model_service/notebooks/P67-Train.ipynb
+```
+
+Run the cells in order. The notebook:
+
+1. Sets up a GPU runtime.
+2. Clones the repository.
+3. Installs model dependencies.
+4. Authenticates with Hugging Face.
+5. Verifies the processed dataset.
+6. Runs `train_lorav2.py`.
+7. Saves the trained adapter to Google Drive.
+
+Default adapter output:
+
+```text
+model_service/outputs/llama3b-slang-lora
+```
+
+Default Google Drive storage path:
+
+```text
+/content/drive/MyDrive/protocol67-models/llama3b-slang-lora
+```
+
+If you use a different Drive path or adapter name, update the path variables near the top of the notebook.
+
+### Serve The Model From Colab
+
+Open this notebook in Google Colab:
+
+```text
+model_service/notebooks/P67-Serve-Model-Colab.ipynb
+```
+
+Run the cells in order. The notebook:
+
+1. Sets up a GPU runtime.
+2. Clones the repository.
+3. Installs model and API dependencies.
+4. Authenticates with Hugging Face.
+5. Restores the trained adapter from Google Drive.
+6. Loads and warms up the translator.
+7. Starts a temporary FastAPI server through ngrok.
+8. Prints a public `/translate` URL.
+
+Use the printed ngrok `/translate` URL as the backend `MODEL_API_URL`:
+
+```env
+MODEL_API_URL=https://YOUR-NGROK-URL.ngrok-free.app/translate
+```
+
+The ngrok URL is temporary and changes when the Colab runtime or tunnel restarts.
+
 ## Evaluation Results
 
 ### Initial evaluation - Baseline

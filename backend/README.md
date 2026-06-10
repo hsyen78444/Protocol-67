@@ -19,6 +19,28 @@ python -m pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
+## Use Colab Model API
+
+If the trained LoRA model is running in Colab through the inference API notebook, ngrok, or a similar remote model API, set `MODEL_API_URL` in `backend/.env` to the remote `/translate` URL:
+
+```env
+MODEL_API_URL=https://YOUR-NGROK-URL.ngrok-free.app/translate
+```
+
+Example:
+
+```env
+MODEL_API_URL=https://splashing-unfixed-ridden.ngrok-free.dev/translate
+```
+
+Then start the backend normally:
+
+```powershell
+uvicorn app.main:app --reload
+```
+
+When `MODEL_API_URL` is set, the backend sends translation requests to that remote model API. When it is empty or unset, the backend uses the local model service translator.
+
 ## API Endpoints
 
 - `GET /health`

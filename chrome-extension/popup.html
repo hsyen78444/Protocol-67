@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Protocol 67 Translator</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="header">
+        <div>
+          <p class="eyebrow">Protocol 67</p>
+          <h1>Translator</h1>
+        </div>
+        <span id="statusDot" class="status-dot" title="Backend status"></span>
+      </header>
+
+      <section class="field-group">
+        <div class="label-row">
+          <label for="inputText">Input</label>
+          <button id="selectionButton" class="ghost-button" type="button">Use selected text</button>
+        </div>
+        <textarea id="inputText" rows="6" placeholder="Paste slang text here..."></textarea>
+      </section>
+
+      <button id="translateButton" class="primary-button" type="button">
+        <span id="buttonText">Translate</span>
+        <span id="spinner" class="spinner" hidden></span>
+      </button>
+
+      <section id="errorBox" class="error-box" hidden></section>
+
+      <section id="resultPanel" class="result-panel" hidden>
+        <div class="result-header">
+          <h2>Output</h2>
+          <button id="copyButton" class="ghost-button" type="button">Copy</button>
+        </div>
+        <p id="translationOutput" class="translation-output"></p>
+      </section>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

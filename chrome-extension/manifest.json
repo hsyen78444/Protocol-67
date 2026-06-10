@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Protocol 67 Translator",
+  "description": "Translate internet slang and brainrot text with the local Protocol 67 backend.",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "Protocol 67 Translator",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "http://127.0.0.1:8000/*"
+  ]
+}

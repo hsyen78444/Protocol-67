@@ -3,3 +3,12 @@ uvicorn[standard]
 pydantic
 sqlalchemy
 python-dotenv
+pandas
+scikit-learn
+torch
+transformers
+datasets
+peft
+accelerate
+evaluate
+trl
